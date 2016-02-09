@@ -1,0 +1,14 @@
+extends layout
+
+block content
+	div#qrcode.text-center
+
+	script(type='text/javascript').
+		$('#qrcode').qrcode('https://login.weixin.qq.com/l/' + '#{message}')
+		$.get('#{message}/api/checkScan', function(data){
+			console.log(data)
+			$.get('#{message}/api/checkLogin', function(data){
+				$('#qrcode').hide()
+				window.location.href = '#{message}/members'
+			})
+		})

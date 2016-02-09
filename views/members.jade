@@ -1,0 +1,27 @@
+extends layout
+
+block content
+  h1 联系人列表
+  div
+    table.table
+      thead
+        colgroup
+          col.col-xs-4
+          col.col-xs-4
+          col.col-xs-4
+        tr
+          th 昵称
+          th 备注
+          th 操作
+      each member in members
+        tr
+          td= member.nickname
+          td= member.remarkname
+          td
+            button.btn.btn-default(type='button', onclick='addMember("#{member.username}")') 打开机器人回复
+  script(type='text/javascript').
+    function addMember(uid) {
+      $.get('api/member/add/'+uid,function(result){
+        console.log(result)
+      })
+    }
