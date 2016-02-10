@@ -15,7 +15,7 @@ let botInstanceArr = {}
 app.get('/', (req, res) => {
 	let bot = new wechat()
 	bot.getUUID().then((uuid) => {
-		res.render('error', {
+		res.render('login', {
 			'message': uuid
 		});
 

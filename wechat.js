@@ -62,7 +62,7 @@ exports = module.exports = class wechat {
 		return this.rp(url).then((body)=>{
 			let data = JSON.parse(body)
 			if(data.code == 100000) {
-				return data.text
+				return data.text + '[微信机器人]'
 			}
 			return "现在思路很乱，最好联系下我哥 T_T..."
 		})
