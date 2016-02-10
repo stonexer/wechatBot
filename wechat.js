@@ -84,8 +84,7 @@ exports = module.exports = class wechat {
 
 	switchUser (uid) {
 		this.credibleUser.push(uid)
-		debug(this.credibleUser)
-
+		debug('Add', this.credibleUser)
 		return 0
 	}
 

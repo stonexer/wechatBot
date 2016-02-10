@@ -18,10 +18,13 @@ block content
           td= member.nickname
           td= member.remarkname
           td
-            button.btn.btn-default(type='button', onclick='addMember("#{member.username}")') 打开机器人回复
+            button.btn.btn-default(type='button', onclick='addMember("#{member.username}", this)') 打开机器人回复
   script(type='text/javascript').
-    function addMember(uid) {
+    function addMember(uid, obj) {
       $.get('api/member/add/'+uid,function(result){
-        console.log(result)
+        console.log(result, obj)
+        if(result.result == 0) {
+          obj.innerHTML = '已打开'
+        }
       })
     }
