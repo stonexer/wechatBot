@@ -26,9 +26,14 @@ app.get('/', (req, res) => {
 
 app.get('/:cid/members', (req, res) => {
 	let bot = botInstanceArr[req.params.cid]
-	res.render('members', {
-		'members': bot.getMemberList()
-	})
+	debug(bot)
+	if(bot) {
+		res.render('members', {
+			'members': bot.getMemberList()
+		})
+	} else {
+		res.redirect('/');
+	}
 })
 
 app.get('/:cid/api/checkScan', (req, res) => {
