@@ -53,7 +53,7 @@ app.get('/:cid/api/checkLogin', (req, res) => {
 	}).then(()=>{
 		return bot.getContact()
 	}).then(()=>{
-		res.send(200)
+		res.send('200')
 		return bot.syncPolling()
 	}).catch((err) => {
 		debug(err)

@@ -11,8 +11,6 @@ function _getTime() {
 exports = module.exports = class wechat {
 
 	constructor () {
-		debug('wechat construt')
-		this.DEBUG = false
 		this.uuid = ''
 		this.baseURI = ''
 		this.redirectURI = ''
@@ -58,7 +56,6 @@ exports = module.exports = class wechat {
 
 	_tuning (word) {
 		let url = encodeURI(`http://www.tuling123.com/openapi/api?key=2ba083ae9f0016664dfb7ed80ba4ffa0&info=${word}`)
-		debug(url)
 		return this.rp(url).then((body)=>{
 			let data = JSON.parse(body)
 			if(data.code == 100000) {
@@ -85,6 +82,7 @@ exports = module.exports = class wechat {
 	switchUser (uid) {
 		this.credibleUser.push(uid)
 		debug('Add', this.credibleUser)
+		this.sendMsg('我是'+this.User['NickName']+'的机器人小助手，欢迎调戏！如有打扰请多多谅解', uid)
 		return 0
 	}
 
@@ -104,8 +102,6 @@ exports = module.exports = class wechat {
 			}
 		})
 
-		debug(url, params)
-
 		this.rp({
 			method: 'POST',
 			uri: url,
@@ -115,7 +111,6 @@ exports = module.exports = class wechat {
 		    }
 		}).then((body)=>{
 			let data = JSON.parse(body)
-			debug(data)
 			return data['BaseResponse']['Ret'] == 0
 		})
 	}
@@ -140,7 +135,6 @@ exports = module.exports = class wechat {
 			}
 			let code = pm[1]
 			let uuid = this.uuid = pm[2]
-			debug(pm[1], pm[2])
 
 			if(code != 200) {
 				throw new Error("GET UUID ERROR")
@@ -278,10 +272,6 @@ exports = module.exports = class wechat {
 			let data = JSON.parse(body)
         	this.memberList = data['MemberList']
 
-        	for(let i in this.memberList) {
-        		// debug(this.memberList[i]['NickName'])
-        	}
-
         	debug(this.memberList.length)
 		})
 	}
@@ -349,9 +339,7 @@ exports = module.exports = class wechat {
 			let fromUser = this._getUserRemarkName(msg['FromUserName'])
 			let content = msg['Content']
 
-			debug(msg['FromUserName'], this.credibleUser)
 			if(this._checkCredible(msg['FromUserName'])) {
-				debug('Credible User')
 				this._tuning(msg['Content']).then((reply)=>{
 					debug(reply)
 					this.sendMsg(reply, msg['FromUserName'])
