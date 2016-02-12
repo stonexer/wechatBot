@@ -160,9 +160,9 @@ exports = module.exports = class wechat {
 			if(code == 201 ) {
 				return code
 			} else if( code == 408 ) {
-				throw new Error('Login Deceed')
+				throw new Error(code)
 			} else {
-				throw new Error('Login Error')
+				throw new Error(code)
 			}
 		})
 	}
@@ -186,9 +186,9 @@ exports = module.exports = class wechat {
 				}
 				return code
 			} else if( code == 408 ) {
-				throw new Error('Login Deceed')
+				throw new Error(code)
 			} else {
-				throw new Error('Login Error')
+				throw new Error(code)
 			}
 		})
 	}

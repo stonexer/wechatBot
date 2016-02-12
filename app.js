@@ -20,6 +20,7 @@ app.get('/', (req, res) => {
 		});
 
 		botInstanceArr[uuid] = bot
+		debug('New Connect', Object.getOwnPropertyNames(botInstanceArr).length)
 	})
 })
 
@@ -33,10 +34,10 @@ app.get('/:cid/members', (req, res) => {
 app.get('/:cid/api/checkScan', (req, res) => {
 	let bot = botInstanceArr[req.params.cid]
 	bot.checkScan().then((code) => {
-		debug(code)
 		res.send(code)
 	}).catch((err) => {
-		debug(err)
+		delete botInstanceArr[req.params.cid]
+		debug('Close Connect', Object.getOwnPropertyNames(botInstanceArr).length)
 		res.send(err)
 	})
 })

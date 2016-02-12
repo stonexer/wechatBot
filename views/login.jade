@@ -6,9 +6,17 @@ block content
 	script(type='text/javascript').
 		$('#qrcode').qrcode('https://login.weixin.qq.com/l/' + '#{message}')
 		$.get('#{message}/api/checkScan', function(data){
-			console.log(data)
-			$.get('#{message}/api/checkLogin', function(data){
-				$('#qrcode').hide()
-				window.location.href = '#{message}/members'
-			})
+			if(data == 200) {
+				$.get('#{message}/api/checkLogin', function(data){
+					if(data == 200) {
+						$('#qrcode').hide()
+						window.location.href = '#{message}/members'
+					} else {
+						alert('登陆超时')
+					}
+				})
+			} else {
+				alert('登陆超时')
+				window.location.href = '/'
+			}
 		})
