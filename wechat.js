@@ -16,26 +16,29 @@ exports = module.exports = class wechat {
 		this.sid = ''
 		this.skey = ''
 		this.passTicket = ''
-		this.deviceId = 'e' + Math.random().toString().substring(2,17)
 		this.BaseRequest = {}
 		this.synckey = ''
 		this.SyncKey = []
 		this.User = []
 		this.memberList = []
-		this.ContactList = []
-		this.GroupList = []
-		this.autoReplyMode = false
-		this.credibleUser = []
+		this.contactList = []
+		this.groupList = []
+		this.deviceId = 'e' + Math.random().toString().substring(2,17)
+		this.credibleUser = new Set()
 
 		const j = rp.jar()
 		this.rp = rp.defaults({jar:j})
 	}
 
-	_getUserRemarkName (id) {
+	_checkCredible (uid) {
+		return this.credibleUser.has(uid)
+	}
+
+	_getUserRemarkName (uid) {
 		let name = ''
 
 		this.memberList.forEach((member)=>{
-			if(member['UserName'] == id) {
+			if(member['UserName'] == uid) {
 				name = member['RemarkName'] ? member['RemarkName'] : member['NickName']
 			}
 		})
@@ -43,23 +46,19 @@ exports = module.exports = class wechat {
 		return name
 	}
 
-	_checkCredible (uid) {
-		var c = false
-		this.credibleUser.forEach((cu)=>{
-			if(cu == uid) c = true
-		})
-		return c
-	}
-
 	_tuning (word) {
-		let url = encodeURI(`http://www.tuling123.com/openapi/api?key=2ba083ae9f0016664dfb7ed80ba4ffa0&info=${word}`)
+		const url = encodeURI(`http://www.tuling123.com/openapi/api?key=2ba083ae9f0016664dfb7ed80ba4ffa0&info=${word}`)
 		return this.rp(url).then((body)=>{
-			let data = JSON.parse(body)
+			const data = JSON.parse(body)
 			if(data.code == 100000) {
 				return data.text + '[微信机器人]'
 			}
 			return "现在思路很乱，最好联系下我哥 T_T..."
 		})
+	}
+
+	_credibleHint (uid) {
+		this.sendMsg('我是'+this.User['NickName']+'的机器人小助手，欢迎调戏！如有打扰请多多谅解', uid)
 	}
 
 	getMemberList () {
@@ -77,9 +76,10 @@ exports = module.exports = class wechat {
 	}
 
 	switchUser (uid) {
-		this.credibleUser.push(uid)
+		this.credibleUser.add(uid)
+		this._credibleHint(uid)
+
 		debug('Add', this.credibleUser)
-		this.sendMsg('我是'+this.User['NickName']+'的机器人小助手，欢迎调戏！如有打扰请多多谅解', uid)
 		return 0
 	}
 
