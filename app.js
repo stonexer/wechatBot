@@ -26,7 +26,6 @@ app.get('/', (req, res) => {
 
 app.get('/:cid/members', (req, res) => {
 	let bot = botInstanceArr[req.params.cid]
-	debug(bot)
 	if(bot) {
 		res.render('members', {
 			'members': bot.getMemberList()
