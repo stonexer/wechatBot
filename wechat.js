@@ -3,10 +3,7 @@ var rp = require('request-promise')
 var debug = require('debug')('wechat')
 var xmlPrase = require('xml2js').parseString;
 
-function _getTime() {
-	let time = Math.round(new Date().getTime())
-	return time
-}
+const _getTime = () => new Date().getTime()
 
 exports = module.exports = class wechat {
 
@@ -30,7 +27,7 @@ exports = module.exports = class wechat {
 		this.autoReplyMode = false
 		this.credibleUser = []
 
-		let j = rp.jar()
+		const j = rp.jar()
 		this.rp = rp.defaults({jar:j})
 	}
 
@@ -339,14 +336,21 @@ exports = module.exports = class wechat {
 			let fromUser = this._getUserRemarkName(msg['FromUserName'])
 			let content = msg['Content']
 
-			if(this._checkCredible(msg['FromUserName'])) {
-				this._tuning(msg['Content']).then((reply)=>{
-					debug(reply)
-					this.sendMsg(reply, msg['FromUserName'])
-				})
-			}
+			switch(type) {
+				case 51:
+					debug('Message: Wechat Init')
+					break
+				case 1:
+					if(this._checkCredible(msg['FromUserName'])) {
+						this._tuning(msg['Content']).then((reply)=>{
+							debug(reply)
+							this.sendMsg(reply, msg['FromUserName'])
+						})
+					}
 
-			debug(fromUser, ': ', content)
+					debug('Message: ', fromUser, ': ', content)
+					break
+			}
 		})
 	}
 
@@ -370,6 +374,6 @@ exports = module.exports = class wechat {
 					}
 				}
 			})
-		}, 1000)
+		}, 2000)
 	}	
 }

@@ -48,18 +48,16 @@ app.get('/:cid/api/checkScan', (req, res) => {
 
 app.get('/:cid/api/checkLogin', (req, res) => {
 	let bot = botInstanceArr[req.params.cid]
-	bot.checkLogin().then((code) => {
-		return bot.login()
-	}).then(()=>{
-		return bot.init()
-	}).then(()=>{
-		return bot.notifyMobile()
-	}).then(()=>{
-		return bot.getContact()
-	}).then(()=>{
+	bot.checkLogin()
+	.then(() => bot.login())
+	.then(()=>bot.init())
+	.then(()=>bot.notifyMobile())
+	.then(()=>bot.getContact())
+	.then(()=>{
 		res.send('200')
 		return bot.syncPolling()
-	}).catch((err) => {
+	})
+	.catch((err) => {
 		debug(err)
 		res.send(err)
 	})
