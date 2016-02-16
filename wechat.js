@@ -1,7 +1,7 @@
 "use strict"
 var rp = require('request-promise')
 var debug = require('debug')('wechat')
-var xmlPrase = require('xml2js').parseString;
+var xmlPrase = require('xml2js').parseString
 
 const _getTime = () => new Date().getTime()
 
@@ -142,7 +142,7 @@ exports = module.exports = class wechat {
 	}
 
 	checkScan () {
-		let url = `https://login.weixin.qq.com/cgi-bin/mmwebwx-bin/login?tip=1&uuid=${this.uuid}&_=${_getTime()}`
+		const url = `https://login.weixin.qq.com/cgi-bin/mmwebwx-bin/login?tip=1&uuid=${this.uuid}&_=${_getTime()}`
 		return this.rp(url).then((body) => {
 			let re = /window.code=(\d+);/
 			let pm = body.match(re)
@@ -159,7 +159,7 @@ exports = module.exports = class wechat {
 	}
 
 	checkLogin () {
-		let url = `https://login.weixin.qq.com/cgi-bin/mmwebwx-bin/login?tip=0&uuid=${this.uuid}&_=${_getTime()}`
+		const url = `https://login.weixin.qq.com/cgi-bin/mmwebwx-bin/login?tip=0&uuid=${this.uuid}&_=${_getTime()}`
 		return this.rp(url).then((body) => {
 			let re = /window.code=(\d+);/
 			let pm = body.match(re)
@@ -188,7 +188,7 @@ exports = module.exports = class wechat {
 		return new Promise((resolve, reject) => {
 			this.rp(this.redirectURI).then((body) => {
 				xmlPrase(body, (err, result) => {
-					let data = result['error']
+					const data = result['error']
 
 					this.skey = data['skey'][0]
 					this.sid = data['wxsid'][0]
@@ -210,8 +210,8 @@ exports = module.exports = class wechat {
 	}
 
 	init () {
-		let url = this.baseURI + `/webwxinit?pass_ticket=${this.passTicket}&skey=${this.skey}&r=${_getTime()}`
-		let params = JSON.stringify({
+		const url = this.baseURI + `/webwxinit?pass_ticket=${this.passTicket}&skey=${this.skey}&r=${_getTime()}`
+		const params = JSON.stringify({
 			BaseRequest: this.BaseRequest
 		})
 
