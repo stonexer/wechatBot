@@ -1,5 +1,6 @@
 "use strict"
-var rp = require('request-promise')
+var axios = require('axios')
+var tough = require('tough-cookie')
 var debug = require('debug')('wechat')
 var xmlPrase = require('xml2js').parseString
 
@@ -7,7 +8,7 @@ const _getTime = () => new Date().getTime()
 
 exports = module.exports = class wechat {
 
-	constructor () {
+	constructor() {
 		this.uuid = ''
 		this.baseURI = ''
 		this.redirectURI = ''
@@ -23,22 +24,44 @@ exports = module.exports = class wechat {
 		this.memberList = []
 		this.contactList = []
 		this.groupList = []
-		this.deviceId = 'e' + Math.random().toString().substring(2,17)
+		this.deviceId = 'e' + Math.random().toString().substring(2, 17)
 		this.credibleUser = new Set()
 
-		const j = rp.jar()
-		this.rp = rp.defaults({jar:j})
+		this.axios = axios
+		if (typeof window == "undefined") {
+			this.cookieJar = new tough.CookieJar()
+
+			this.axios.interceptors.request.use(config => {
+				config.headers['cookie'] = this.cookieJar.getCookieStringSync(config.url)
+				return config
+			}, err => {
+				return Promise.reject(err)
+			})
+
+			this.axios.interceptors.response.use(res => {
+				let cookies = res.headers['set-cookie']
+				if (cookies instanceof Array)
+					cookies.forEach(cookie => {
+						this.cookieJar.setCookieSync(cookie, res.config.url)
+					})
+				else if (typeof(cookies) == 'String')
+					this.cookieJar.setCookieSync(cookies, res.config.url)
+				return res
+			}, err => {
+				return Promise.reject(err)
+			})
+		}
 	}
 
-	_checkCredible (uid) {
+	_checkCredible(uid) {
 		return this.credibleUser.has(uid)
 	}
 
-	_getUserRemarkName (uid) {
+	_getUserRemarkName(uid) {
 		let name = ''
 
-		this.memberList.forEach((member)=>{
-			if(member['UserName'] == uid) {
+		this.memberList.forEach((member) => {
+			if (member['UserName'] == uid) {
 				name = member['RemarkName'] ? member['RemarkName'] : member['NickName']
 			}
 		})
@@ -46,25 +69,28 @@ exports = module.exports = class wechat {
 		return name
 	}
 
-	_tuning (word) {
+	_tuning(word) {
 		const url = encodeURI(`http://www.tuling123.com/openapi/api?key=2ba083ae9f0016664dfb7ed80ba4ffa0&info=${word}`)
-		return this.rp(url).then((body)=>{
-			const data = JSON.parse(body)
-			if(data.code == 100000) {
+		return this.axios({
+			url: url,
+			method: 'GET'
+		}).then(res => {
+			const data = res.data
+			if (data.code == 100000) {
 				return data.text + '[微信机器人]'
 			}
 			return "现在思路很乱，最好联系下我哥 T_T..."
 		})
 	}
 
-	_credibleHint (uid) {
-		this.sendMsg('我是'+this.User['NickName']+'的机器人小助手，欢迎调戏！如有打扰请多多谅解', uid)
+	_credibleHint(uid) {
+		this.sendMsg('我是' + this.User['NickName'] + '的机器人小助手，欢迎调戏！如有打扰请多多谅解', uid)
 	}
 
-	getMemberList () {
+	getMemberList() {
 		let members = []
 
-		this.memberList.forEach((member)=>{
+		this.memberList.forEach((member) => {
 			members.push({
 				'username': member['UserName'],
 				'remarkname': member['RemarkName'],
@@ -75,7 +101,7 @@ exports = module.exports = class wechat {
 		return members
 	}
 
-	switchUser (uid) {
+	switchUser(uid) {
 		this.credibleUser.add(uid)
 		this._credibleHint(uid)
 
@@ -83,11 +109,11 @@ exports = module.exports = class wechat {
 		return 0
 	}
 
-	sendMsg (msg, to) {
+	sendMsg(msg, to) {
 		let url = this.baseURI + `/webwxsendmsg?pass_ticket=${this.passTicket}`
-		let clientMsgId = _getTime() + '0' + Math.random().toString().substring(2,5)
+		let clientMsgId = _getTime() + '0' + Math.random().toString().substring(2, 5)
 
-		let params = JSON.stringify({
+		let params = {
 			'BaseRequest': this.BaseRequest,
 			"Msg": {
 				"Type": 1,
@@ -97,22 +123,22 @@ exports = module.exports = class wechat {
 				"LocalID": clientMsgId,
 				"ClientMsgId": clientMsgId
 			}
-		})
+		}
 
-		this.rp({
+		this.axios({
 			method: 'POST',
-			uri: url,
-			body: params,
+			url: url,
+			data: params,
 			headers: {
 				'ContentType': 'application/json; charset=UTF-8'
-		    }
-		}).then((body)=>{
-			let data = JSON.parse(body)
+			}
+		}).then(res => {
+			let data = res.data
 			return data['BaseResponse']['Ret'] == 0
 		})
 	}
-	
-	getUUID () {
+
+	getUUID() {
 		let url = 'https://login.weixin.qq.com/jslogin'
 		let params = {
 			'appid': 'wx782c26e4c19acffb',
@@ -120,20 +146,20 @@ exports = module.exports = class wechat {
 			'lang': 'zh_CN',
 			'_': _getTime()
 		}
-		return this.rp({
+		return this.axios({
 			method: 'POST',
-			uri: url,
-			form: params
-		}).then((body) => {
+			url: url,
+			params: params
+		}).then(res => {
 			let re = /window.QRLogin.code = (\d+); window.QRLogin.uuid = "(\S+?)"/
-			let pm = body.match(re)
-			if(!pm) {
+			let pm = res.data.match(re)
+			if (!pm) {
 				throw new Error("GET UUID ERROR")
 			}
 			let code = pm[1]
 			let uuid = this.uuid = pm[2]
 
-			if(code != 200) {
+			if (code != 200) {
 				throw new Error("GET UUID ERROR")
 			}
 
@@ -141,16 +167,19 @@ exports = module.exports = class wechat {
 		})
 	}
 
-	checkScan () {
+	checkScan() {
 		const url = `https://login.weixin.qq.com/cgi-bin/mmwebwx-bin/login?tip=1&uuid=${this.uuid}&_=${_getTime()}`
-		return this.rp(url).then((body) => {
+		return this.axios({
+			method: 'GET',
+			url: url
+		}).then(res => {
 			let re = /window.code=(\d+);/
-			let pm = body.match(re)
+			let pm = res.data.match(re)
 			let code = pm[1]
 
-			if(code == 201 ) {
+			if (code == 201) {
 				return code
-			} else if( code == 408 ) {
+			} else if (code == 408) {
 				throw new Error(code)
 			} else {
 				throw new Error(code)
@@ -158,25 +187,28 @@ exports = module.exports = class wechat {
 		})
 	}
 
-	checkLogin () {
+	checkLogin() {
 		const url = `https://login.weixin.qq.com/cgi-bin/mmwebwx-bin/login?tip=0&uuid=${this.uuid}&_=${_getTime()}`
-		return this.rp(url).then((body) => {
+		return this.axios({
+			method: 'GET',
+			url: url
+		}).then(res => {
 			let re = /window.code=(\d+);/
-			let pm = body.match(re)
+			let pm = res.data.match(re)
 			let code = pm[1]
 
-			if( code == 200 ) {
+			if (code == 200) {
 				let re = /window.redirect_uri="(\S+?)";/
-				let pm = body.match(re)
+				let pm = res.data.match(re)
 				this.redirectURI = pm[1] + '&fun=new'
 				this.baseURI = this.redirectURI.substring(0, this.redirectURI.lastIndexOf("/"))
-				if(this.baseURI[10] == 2) {
+				if (this.baseURI[10] == 2) {
 					this.webpush = 'webpush2'
 				} else {
 					this.webpush = 'webpush'
 				}
 				return code
-			} else if( code == 408 ) {
+			} else if (code == 408) {
 				throw new Error(code)
 			} else {
 				throw new Error(code)
@@ -184,10 +216,13 @@ exports = module.exports = class wechat {
 		})
 	}
 
-	login () {
+	login() {
 		return new Promise((resolve, reject) => {
-			this.rp(this.redirectURI).then((body) => {
-				xmlPrase(body, (err, result) => {
+			this.axios({
+				method: 'GET',
+				url: this.redirectURI
+			}).then(res => {
+				xmlPrase(res.data, (err, result) => {
 					const data = result['error']
 
 					this.skey = data['skey'][0]
@@ -209,105 +244,114 @@ exports = module.exports = class wechat {
 		})
 	}
 
-	init () {
+	init() {
 		const url = this.baseURI + `/webwxinit?pass_ticket=${this.passTicket}&skey=${this.skey}&r=${_getTime()}`
-		const params = JSON.stringify({
+		const params = {
 			BaseRequest: this.BaseRequest
-		})
+		}
 
-		return this.rp({
+		return this.axios({
 			method: 'POST',
-			uri: url,
-			body: params,
+			url: url,
+			data: params,
 			headers: {
 				'ContentType': 'application/json; charset=UTF-8'
-		    }
-		}).then((body) => {
-			let data = JSON.parse(body)
+			}
+		}).then(res => {
+			let data = res.data
 			this.SyncKey = data['SyncKey']
 			this.User = data['User']
 
 			let synckeylist = []
 			for (let e = this.SyncKey['List'], o = 0, n = e.length; n > o; o++)
 				synckeylist.push(e[o]['Key'] + "_" + e[o]['Val'])
-            this.synckey = synckeylist.join("|")
-        	
-        	debug('wechatInit Success')
+			this.synckey = synckeylist.join("|")
 
-        	return data['BaseResponse']['Ret'] == 0
+			debug('wechatInit Success')
+
+			return data['BaseResponse']['Ret'] == 0
 		})
 	}
 
-	notifyMobile () {
+	notifyMobile() {
 		let url = this.baseURI + `/webwxstatusnotify?lang=zh_CN&pass_ticket=${this.passTicket}`
-		let params = JSON.stringify({
+		let params = {
 			'BaseRequest': this.BaseRequest,
 			"Code": 3,
 			"FromUserName": this.User['UserName'],
 			"ToUserName": this.User['UserName'],
 			"ClientMsgId": _getTime()
-		})
+		}
 
-		return this.rp({
+		return this.axios({
 			method: 'POST',
-			uri: url,
-			body: params,
+			url: url,
+			data: params,
 			headers: {
 				'ContentType': 'application/json; charset=UTF-8'
-		    }
-		}).then((body) => {
-			let data = JSON.parse(body)
+			}
+		}).then(res => {
+			let data = res.data
 			debug('notifyMobile Success')
-        	return data['BaseResponse']['Ret'] == 0
+			return data['BaseResponse']['Ret'] == 0
 		})
 	}
 
-	getContact () {
+	getContact() {
 		let url = this.baseURI + `/webwxgetcontact?lang=zh_CN&pass_ticket=${this.passTicket}&seq=0&skey=${this.skey}&r=${_getTime()}`
+		return this.axios({
+				url: url,
+				method: 'POST',
+				headers: {
+					'ContentType': 'application/json; charset=UTF-8'
+				}
+			}).then(res => {
+				let data = res.data
+				this.memberList = data['MemberList']
 
-		return this.rp(url).then((body) => {
-			let data = JSON.parse(body)
-        	this.memberList = data['MemberList']
-
-        	debug(this.memberList.length)
-		})
+				debug(this.memberList.length)
+			})
+			.catch(err => {
+				debug(err)
+			})
 	}
 
-	sync () {
+	sync() {
 		let url = this.baseURI + `/webwxsync?sid=${this.sid}&skey=${this.skey}&pass_ticket=${this.passTicket}`
-		let params = JSON.stringify({
+		let params = {
 			'BaseRequest': this.BaseRequest,
 			"SyncKey": this.SyncKey,
 			'rr': ~_getTime()
-		})
+		}
 
-		return this.rp({
+		return this.axios({
 			method: 'POST',
-			uri: url,
-			body: params,
+			url: url,
+			data: params,
 			headers: {
 				'ContentType': 'application/json; charset=UTF-8'
-		    }
-		}).then((body)=>{
-			let data = JSON.parse(body)
-			if(data['BaseResponse']['Ret'] == 0) {
+			}
+		}).then(res => {
+			let data = res.data
+			if (data['BaseResponse']['Ret'] == 0) {
 				this.SyncKey = data['SyncKey']
 				let synckeylist = []
 				for (let e = this.SyncKey['List'], o = 0, n = e.length; n > o; o++)
 					synckeylist.push(e[o]['Key'] + "_" + e[o]['Val'])
-	            this.synckey = synckeylist.join("|")
+				this.synckey = synckeylist.join("|")
 			}
 
 			return data
 		})
 	}
 
-	syncCheck () {
+	syncCheck() {
 		let url = `https://${this.webpush}.weixin.qq.com/cgi-bin/mmwebwx-bin/synccheck`
 
-		return this.rp({
-			uri: url,
-			qs: {
+		return this.axios({
+			method: 'GET',
+			url: url,
+			params: {
 				'r': _getTime(),
 				'sid': this.sid,
 				'uin': this.uin,
@@ -316,33 +360,35 @@ exports = module.exports = class wechat {
 				'synckey': this.synckey,
 				'_': _getTime(),
 			},
-		}).then((body)=>{
+		}).then(res => {
 			let re = /window.synccheck={retcode:"(\d+)",selector:"(\d+)"}/
-			let pm = body.match(re)
+			let pm = res.data.match(re)
 
 			let retcode = pm[1]
 			let selector = pm[2]
 
-			return {retcode, selector}
+			return {
+				retcode, selector
+			}
 		})
 	}
 
-	handleMsg (data) {
-		if(data['AddMsgList'].length) {
+	handleMsg(data) {
+		if (data['AddMsgList'].length) {
 			debug(data['AddMsgList'].length, 'Message')
 		}
-		data['AddMsgList'].forEach((msg)=>{
+		data['AddMsgList'].forEach((msg) => {
 			let type = msg['MsgType']
 			let fromUser = this._getUserRemarkName(msg['FromUserName'])
 			let content = msg['Content']
 
-			switch(type) {
+			switch (type) {
 				case 51:
 					debug('Message: Wechat Init')
 					break
 				case 1:
-					if(this._checkCredible(msg['FromUserName'])) {
-						this._tuning(msg['Content']).then((reply)=>{
+					if (this._checkCredible(msg['FromUserName'])) {
+						this._tuning(msg['Content']).then((reply) => {
 							debug(reply)
 							this.sendMsg(reply, msg['FromUserName'])
 						})
@@ -354,26 +400,26 @@ exports = module.exports = class wechat {
 		})
 	}
 
-	syncPolling () {
-		setInterval(()=>{
-			this.syncCheck().then((state)=>{
-				if(state.retcode == '1100') {
+	syncPolling() {
+		setInterval(() => {
+			this.syncCheck().then((state) => {
+				if (state.retcode == '1100') {
 					debug('Logout')
-				} else if(state.retcode == '0') {
-					if(state.selector == '2') {
-						this.sync().then((data)=>{
+				} else if (state.retcode == '0') {
+					if (state.selector == '2') {
+						this.sync().then((data) => {
 							let r = data
-							if(r) {
+							if (r) {
 								this.handleMsg(r)
 							}
 						})
-					} else if(state.selector == '7') {
+					} else if (state.selector == '7') {
 						debug('Mobile Open')
-					} else if(state.selector == '0') {
+					} else if (state.selector == '0') {
 						debug('Normal')
 					}
 				}
 			})
 		}, 2000)
-	}	
+	}
 }

@@ -4,10 +4,11 @@
   "description": "a wechat bot demo",
   "main": "app.js",
   "dependencies": {
+    "axios": "^0.9.1",
     "debug": "^2.2.0",
     "express": "^4.13.4",
     "jade": "^1.11.0",
-    "request-promise": "^2.0.0",
+    "tough-cookie": "^2.2.1",
     "xml2js": "^0.4.16"
   },
   "devDependencies": {},
