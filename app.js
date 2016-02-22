@@ -1,11 +1,10 @@
 "use strict"
-var path = require('path');
-var express = require('express')
+var express = require("express")
 var wechat = require('./wechat')
 var debug = require('debug')('app')
 
 const app = express()
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 
 app.use('/static', express.static('public'));
