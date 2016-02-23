@@ -398,7 +398,7 @@ exports = module.exports = class wechat {
 
     syncPolling() {
         this.syncCheck().then((state) => {
-            if (state.retcode == '1100') {
+            if (state.retcode == '1100' || state.retcode == '1101') {
                 debug('Logout')
             } else if (state.retcode == '0') {
                 if (state.selector == '2') {
@@ -412,11 +412,12 @@ exports = module.exports = class wechat {
                 } else if (state.selector == '0') {
                     debug('Normal')
                 }
+                setTimeout(() => {
+                    this.syncPolling()
+                }, 1000)
             }
-
-            setTimeout(() => {
-                this.syncPolling()
-            }, 1000)
+        }).catch(err => {
+            debug(err.message)
         })
     }
 
