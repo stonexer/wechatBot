@@ -20,7 +20,7 @@ exports = module.exports = class wechat {
 		this.BaseRequest = {}
 		this.synckey = ''
 		this.SyncKey = []
-		this.User = []
+		this.user = []
 		this.memberList = []
 		this.contactList = []
 		this.groupList = []
@@ -84,7 +84,7 @@ exports = module.exports = class wechat {
 	}
 
 	_credibleHint(uid) {
-		this.sendMsg('我是' + this.User['NickName'] + '的机器人小助手，欢迎调戏！如有打扰请多多谅解', uid)
+		this.sendMsg('我是' + this.user['NickName'] + '的机器人小助手，欢迎调戏！如有打扰请多多谅解', uid)
 	}
 
 	getMemberList() {
@@ -118,7 +118,7 @@ exports = module.exports = class wechat {
 			"Msg": {
 				"Type": 1,
 				"Content": msg,
-				"FromUserName": this.User['UserName'],
+				"FromUserName": this.user['UserName'],
 				"ToUserName": to,
 				"LocalID": clientMsgId,
 				"ClientMsgId": clientMsgId
@@ -260,7 +260,7 @@ exports = module.exports = class wechat {
 		}).then(res => {
 			let data = res.data
 			this.SyncKey = data['SyncKey']
-			this.User = data['User']
+			this.user = data['User']
 
 			let synckeylist = []
 			for (let e = this.SyncKey['List'], o = 0, n = e.length; n > o; o++)
@@ -278,8 +278,8 @@ exports = module.exports = class wechat {
 		let params = {
 			'BaseRequest': this.BaseRequest,
 			"Code": 3,
-			"FromUserName": this.User['UserName'],
-			"ToUserName": this.User['UserName'],
+			"FromUserName": this.user['UserName'],
+			"ToUserName": this.user['UserName'],
 			"ClientMsgId": _getTime()
 		}
 
@@ -374,9 +374,8 @@ exports = module.exports = class wechat {
 	}
 
 	handleMsg(data) {
-		if (data['AddMsgList'].length) {
-			debug(data['AddMsgList'].length, 'Message')
-		}
+		debug('Receive ', data['AddMsgList'].length, 'Message')
+
 		data['AddMsgList'].forEach((msg) => {
 			let type = msg['MsgType']
 			let fromUser = this._getUserRemarkName(msg['FromUserName'])
@@ -384,7 +383,7 @@ exports = module.exports = class wechat {
 
 			switch (type) {
 				case 51:
-					debug('Message: Wechat Init')
+					debug(' Message: Wechat Init')
 					break
 				case 1:
 					if (this._checkCredible(msg['FromUserName'])) {
@@ -394,32 +393,33 @@ exports = module.exports = class wechat {
 						})
 					}
 
-					debug('Message: ', fromUser, ': ', content)
+					debug(' Message: ', fromUser, ': ', content)
 					break
 			}
 		})
 	}
 
 	syncPolling() {
-		setInterval(() => {
-			this.syncCheck().then((state) => {
-				if (state.retcode == '1100') {
-					debug('Logout')
-				} else if (state.retcode == '0') {
-					if (state.selector == '2') {
-						this.sync().then((data) => {
-							let r = data
-							if (r) {
-								this.handleMsg(r)
-							}
-						})
-					} else if (state.selector == '7') {
-						debug('Mobile Open')
-					} else if (state.selector == '0') {
-						debug('Normal')
-					}
+		this.syncCheck().then((state) => {
+			if (state.retcode == '1100') {
+				debug('Logout')
+			} else if (state.retcode == '0') {
+				if (state.selector == '2') {
+					this.sync().then((data) => {
+						if (data) {
+							this.handleMsg(data)
+						}
+					})
+				} else if (state.selector == '7') {
+					debug('Mobile Open')
+				} else if (state.selector == '0') {
+					debug('Normal')
 				}
-			})
-		}, 2000)
+			}
+
+			setTimeout(()=>{
+				this.syncPolling()
+			}, 1000)
+		})
 	}
 }
