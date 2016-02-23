@@ -100,7 +100,11 @@ exports = module.exports = class wechat {
             }
         }).then(res => {
             let data = res.data
-            return data['BaseResponse']['Ret'] == 0
+            if (data['BaseResponse']['Ret'] !== 0)
+                throw new Error(data['BaseResponse']['Ret'])
+        }).catch(err => {
+            debug(err)
+            throw new Error('发送信息失败')
         })
     }
 
@@ -130,6 +134,9 @@ exports = module.exports = class wechat {
             }
 
             return uuid
+        }).catch(err => {
+            debug(err)
+            throw new Error('获取UUID失败')
         })
     }
 
@@ -150,6 +157,9 @@ exports = module.exports = class wechat {
             } else {
                 throw new Error(code)
             }
+        }).catch(err => {
+            debug(err)
+            throw new Error('获取扫描状态信息失败')
         })
     }
 
@@ -179,34 +189,38 @@ exports = module.exports = class wechat {
             } else {
                 throw new Error(code)
             }
+        }).catch(err => {
+            debug(err)
+            throw new Error('获取确认登录信息失败')
         })
     }
 
     login() {
-        return new Promise((resolve, reject) => {
-            this.axios({
-                method: 'GET',
-                url: this.redirectURI
-            }).then(res => {
-                xmlPrase(res.data, (err, result) => {
-                    const data = result['error']
+        return this.axios({
+            method: 'GET',
+            url: this.redirectURI
+        }).then(res => {
+            xmlPrase(res.data, (err, result) => {
+                const data = result['error']
 
-                    this.skey = data['skey'][0]
-                    this.sid = data['wxsid'][0]
-                    this.uin = data['wxuin'][0]
-                    this.passTicket = data['pass_ticket'][0]
+                this.skey = data['skey'][0]
+                this.sid = data['wxsid'][0]
+                this.uin = data['wxuin'][0]
+                this.passTicket = data['pass_ticket'][0]
 
-                    this.BaseRequest = {
-                        'Uin': parseInt(this.uin, 10),
-                        'Sid': this.sid,
-                        'Skey': this.skey,
-                        'DeviceID': this.deviceId
-                    }
+                this.BaseRequest = {
+                    'Uin': parseInt(this.uin, 10),
+                    'Sid': this.sid,
+                    'Skey': this.skey,
+                    'DeviceID': this.deviceId
+                }
 
-                    debug('login Success')
-                    resolve(this.BaseRequest)
-                })
+                debug('login Success')
+                return true
             })
+        }).catch(err => {
+            debug(err)
+            throw new Error('登录失败')
         })
     }
 
@@ -235,7 +249,12 @@ exports = module.exports = class wechat {
 
             debug('wechatInit Success')
 
-            return data['BaseResponse']['Ret'] == 0
+            if (data['BaseResponse']['Ret'] !== 0)
+                throw new Error(data['BaseResponse']['Ret'])
+            return true
+        }).catch(err => {
+            debug(err)
+            throw new Error('微信初始化失败')
         })
     }
 
@@ -259,27 +278,33 @@ exports = module.exports = class wechat {
         }).then(res => {
             let data = res.data
             debug('notifyMobile Success')
-            return data['BaseResponse']['Ret'] == 0
+            if (data['BaseResponse']['Ret'] !== 0)
+                throw new Error(data['BaseResponse']['Ret'])
+            return true
+        }).catch(err => {
+            debug(err)
+            throw new Error('开启状态通知失败')
         })
     }
 
     getContact() {
         let url = this.baseURI + `/webwxgetcontact?lang=zh_CN&pass_ticket=${this.passTicket}&seq=0&skey=${this.skey}&r=${_getTime()}`
         return this.axios({
-                url: url,
-                method: 'POST',
-                headers: {
-                    'ContentType': 'application/json; charset=UTF-8'
-                }
-            }).then(res => {
-                let data = res.data
-                this.memberList = data['MemberList']
+            url: url,
+            method: 'POST',
+            headers: {
+                'ContentType': 'application/json; charset=UTF-8'
+            }
+        }).then(res => {
+            let data = res.data
+            this.memberList = data['MemberList']
 
-                debug(this.memberList.length)
-            })
-            .catch(err => {
-                debug(err)
-            })
+            debug(this.memberList.length)
+            return true
+        }).catch(err => {
+            debug(err)
+            throw new Error('获取通讯录失败')
+        })
     }
 
     sync() {
@@ -308,6 +333,9 @@ exports = module.exports = class wechat {
             }
 
             return data
+        }).catch(err => {
+            debug(err)
+            throw new Error('获取新信息失败')
         })
     }
 
@@ -336,6 +364,9 @@ exports = module.exports = class wechat {
             return {
                 retcode, selector
             }
+        }).catch(err => {
+            debug(err)
+            throw new Error('同步失败')
         })
     }
 
@@ -415,6 +446,9 @@ exports = module.exports = class wechat {
             if (data.code == 100000) {
                 return data.text + '[微信机器人]'
             }
+            return "现在思路很乱，最好联系下我哥 T_T..."
+        }).catch(err => {
+            debug(err)
             return "现在思路很乱，最好联系下我哥 T_T..."
         })
     }
