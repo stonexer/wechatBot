@@ -27,7 +27,7 @@ app.get('/:cid/members', (req, res) => {
 	let bot = botInstanceArr[req.params.cid]
 	if(bot) {
 		res.render('members', {
-			'members': bot.getMemberList()
+			'members': bot.friendList
 		})
 	} else {
 		res.redirect('/');
@@ -47,8 +47,9 @@ app.get('/:cid/api/checkScan', (req, res) => {
 
 app.get('/:cid/api/checkLogin', (req, res) => {
 	let bot = botInstanceArr[req.params.cid]
+	
 	bot.checkLogin()
-	.then(() => bot.login())
+	.then(()=>bot.login())
 	.then(()=>bot.init())
 	.then(()=>bot.notifyMobile())
 	.then(()=>bot.getContact())

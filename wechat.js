@@ -8,418 +8,418 @@ const _getTime = () => new Date().getTime()
 
 exports = module.exports = class wechat {
 
-	constructor() {
-		this.uuid = ''
-		this.baseURI = ''
-		this.redirectURI = ''
-		this.webpush = ''
-		this.uin = ''
-		this.sid = ''
-		this.skey = ''
-		this.passTicket = ''
-		this.BaseRequest = {}
-		this.synckey = ''
-		this.SyncKey = []
-		this.user = []
-		this.memberList = []
-		this.contactList = []
-		this.groupList = []
-		this.deviceId = 'e' + Math.random().toString().substring(2, 17)
-		this.credibleUser = new Set()
+    constructor() {
+        this.uuid = ''
+        this.baseURI = ''
+        this.redirectURI = ''
+        this.webpush = ''
+        this.uin = ''
+        this.sid = ''
+        this.skey = ''
+        this.passTicket = ''
+        this.BaseRequest = {}
+        this.synckey = ''
+        this.SyncKey = []
+        this.user = []
+        this.memberList = []
+        this.contactList = []
+        this.groupList = []
+        this.deviceId = 'e' + Math.random().toString().substring(2, 17)
+        this.credibleUser = new Set()
 
-		this.axios = axios
-		if (typeof window == "undefined") {
-			this.cookieJar = new tough.CookieJar()
+        this.axios = axios
+        if (typeof window == "undefined") {
+            this.cookieJar = new tough.CookieJar()
 
-			this.axios.interceptors.request.use(config => {
-				config.headers['cookie'] = this.cookieJar.getCookieStringSync(config.url)
-				return config
-			}, err => {
-				return Promise.reject(err)
-			})
+            this.axios.interceptors.request.use(config => {
+                config.headers['cookie'] = this.cookieJar.getCookieStringSync(config.url)
+                return config
+            }, err => {
+                return Promise.reject(err)
+            })
 
-			this.axios.interceptors.response.use(res => {
-				let cookies = res.headers['set-cookie']
-				if (cookies instanceof Array)
-					cookies.forEach(cookie => {
-						this.cookieJar.setCookieSync(cookie, res.config.url)
-					})
-				else if (typeof(cookies) == 'String')
-					this.cookieJar.setCookieSync(cookies, res.config.url)
-				return res
-			}, err => {
-				return Promise.reject(err)
-			})
-		}
-	}
+            this.axios.interceptors.response.use(res => {
+                let cookies = res.headers['set-cookie']
+                if (cookies instanceof Array)
+                    cookies.forEach(cookie => {
+                        this.cookieJar.setCookieSync(cookie, res.config.url)
+                    })
+                else if (typeof(cookies) == 'String')
+                    this.cookieJar.setCookieSync(cookies, res.config.url)
+                return res
+            }, err => {
+                return Promise.reject(err)
+            })
+        }
+    }
 
-	_checkCredible(uid) {
-		return this.credibleUser.has(uid)
-	}
+    get friendList() {
+        let members = []
 
-	_getUserRemarkName(uid) {
-		let name = ''
+        this.memberList.forEach((member) => {
+            members.push({
+                'username': member['UserName'],
+                'remarkname': member['RemarkName'],
+                'nickname': member['NickName']
+            })
+        })
 
-		this.memberList.forEach((member) => {
-			if (member['UserName'] == uid) {
-				name = member['RemarkName'] ? member['RemarkName'] : member['NickName']
-			}
-		})
+        return members
+    }
 
-		return name
-	}
+    switchUser(uid) {
+        this.credibleUser.add(uid)
+        this._credibleHint(uid)
 
-	_tuning(word) {
-		const url = encodeURI(`http://www.tuling123.com/openapi/api?key=2ba083ae9f0016664dfb7ed80ba4ffa0&info=${word}`)
-		return this.axios({
-			url: url,
-			method: 'GET'
-		}).then(res => {
-			const data = res.data
-			if (data.code == 100000) {
-				return data.text + '[微信机器人]'
-			}
-			return "现在思路很乱，最好联系下我哥 T_T..."
-		})
-	}
+        debug('Add', this.credibleUser)
+        return 0
+    }
 
-	_credibleHint(uid) {
-		this.sendMsg('我是' + this.user['NickName'] + '的机器人小助手，欢迎调戏！如有打扰请多多谅解', uid)
-	}
+    sendMsg(msg, to) {
+        let url = this.baseURI + `/webwxsendmsg?pass_ticket=${this.passTicket}`
+        let clientMsgId = _getTime() + '0' + Math.random().toString().substring(2, 5)
 
-	getMemberList() {
-		let members = []
+        let params = {
+            'BaseRequest': this.BaseRequest,
+            "Msg": {
+                "Type": 1,
+                "Content": msg,
+                "FromUserName": this.user['UserName'],
+                "ToUserName": to,
+                "LocalID": clientMsgId,
+                "ClientMsgId": clientMsgId
+            }
+        }
 
-		this.memberList.forEach((member) => {
-			members.push({
-				'username': member['UserName'],
-				'remarkname': member['RemarkName'],
-				'nickname': member['NickName']
-			})
-		})
+        this.axios({
+            method: 'POST',
+            url: url,
+            data: params,
+            headers: {
+                'ContentType': 'application/json; charset=UTF-8'
+            }
+        }).then(res => {
+            let data = res.data
+            return data['BaseResponse']['Ret'] == 0
+        })
+    }
 
-		return members
-	}
+    getUUID() {
+        let url = 'https://login.weixin.qq.com/jslogin'
+        let params = {
+            'appid': 'wx782c26e4c19acffb',
+            'fun': 'new',
+            'lang': 'zh_CN',
+            '_': _getTime()
+        }
+        return this.axios({
+            method: 'POST',
+            url: url,
+            params: params
+        }).then(res => {
+            let re = /window.QRLogin.code = (\d+); window.QRLogin.uuid = "(\S+?)"/
+            let pm = res.data.match(re)
+            if (!pm) {
+                throw new Error("GET UUID ERROR")
+            }
+            let code = pm[1]
+            let uuid = this.uuid = pm[2]
 
-	switchUser(uid) {
-		this.credibleUser.add(uid)
-		this._credibleHint(uid)
+            if (code != 200) {
+                throw new Error("GET UUID ERROR")
+            }
 
-		debug('Add', this.credibleUser)
-		return 0
-	}
+            return uuid
+        })
+    }
 
-	sendMsg(msg, to) {
-		let url = this.baseURI + `/webwxsendmsg?pass_ticket=${this.passTicket}`
-		let clientMsgId = _getTime() + '0' + Math.random().toString().substring(2, 5)
+    checkScan() {
+        const url = `https://login.weixin.qq.com/cgi-bin/mmwebwx-bin/login?tip=1&uuid=${this.uuid}&_=${_getTime()}`
+        return this.axios({
+            method: 'GET',
+            url: url
+        }).then(res => {
+            let re = /window.code=(\d+);/
+            let pm = res.data.match(re)
+            let code = pm[1]
 
-		let params = {
-			'BaseRequest': this.BaseRequest,
-			"Msg": {
-				"Type": 1,
-				"Content": msg,
-				"FromUserName": this.user['UserName'],
-				"ToUserName": to,
-				"LocalID": clientMsgId,
-				"ClientMsgId": clientMsgId
-			}
-		}
+            if (code == 201) {
+                return code
+            } else if (code == 408) {
+                throw new Error(code)
+            } else {
+                throw new Error(code)
+            }
+        })
+    }
 
-		this.axios({
-			method: 'POST',
-			url: url,
-			data: params,
-			headers: {
-				'ContentType': 'application/json; charset=UTF-8'
-			}
-		}).then(res => {
-			let data = res.data
-			return data['BaseResponse']['Ret'] == 0
-		})
-	}
+    checkLogin() {
+        const url = `https://login.weixin.qq.com/cgi-bin/mmwebwx-bin/login?tip=0&uuid=${this.uuid}&_=${_getTime()}`
+        return this.axios({
+            method: 'GET',
+            url: url
+        }).then(res => {
+            let re = /window.code=(\d+);/
+            let pm = res.data.match(re)
+            let code = pm[1]
 
-	getUUID() {
-		let url = 'https://login.weixin.qq.com/jslogin'
-		let params = {
-			'appid': 'wx782c26e4c19acffb',
-			'fun': 'new',
-			'lang': 'zh_CN',
-			'_': _getTime()
-		}
-		return this.axios({
-			method: 'POST',
-			url: url,
-			params: params
-		}).then(res => {
-			let re = /window.QRLogin.code = (\d+); window.QRLogin.uuid = "(\S+?)"/
-			let pm = res.data.match(re)
-			if (!pm) {
-				throw new Error("GET UUID ERROR")
-			}
-			let code = pm[1]
-			let uuid = this.uuid = pm[2]
+            if (code == 200) {
+                let re = /window.redirect_uri="(\S+?)";/
+                let pm = res.data.match(re)
+                this.redirectURI = pm[1] + '&fun=new'
+                this.baseURI = this.redirectURI.substring(0, this.redirectURI.lastIndexOf("/"))
+                if (this.baseURI[10] == 2) {
+                    this.webpush = 'webpush2'
+                } else {
+                    this.webpush = 'webpush'
+                }
+                return code
+            } else if (code == 408) {
+                throw new Error(code)
+            } else {
+                throw new Error(code)
+            }
+        })
+    }
 
-			if (code != 200) {
-				throw new Error("GET UUID ERROR")
-			}
+    login() {
+        return new Promise((resolve, reject) => {
+            this.axios({
+                method: 'GET',
+                url: this.redirectURI
+            }).then(res => {
+                xmlPrase(res.data, (err, result) => {
+                    const data = result['error']
 
-			return uuid
-		})
-	}
+                    this.skey = data['skey'][0]
+                    this.sid = data['wxsid'][0]
+                    this.uin = data['wxuin'][0]
+                    this.passTicket = data['pass_ticket'][0]
 
-	checkScan() {
-		const url = `https://login.weixin.qq.com/cgi-bin/mmwebwx-bin/login?tip=1&uuid=${this.uuid}&_=${_getTime()}`
-		return this.axios({
-			method: 'GET',
-			url: url
-		}).then(res => {
-			let re = /window.code=(\d+);/
-			let pm = res.data.match(re)
-			let code = pm[1]
+                    this.BaseRequest = {
+                        'Uin': parseInt(this.uin, 10),
+                        'Sid': this.sid,
+                        'Skey': this.skey,
+                        'DeviceID': this.deviceId
+                    }
 
-			if (code == 201) {
-				return code
-			} else if (code == 408) {
-				throw new Error(code)
-			} else {
-				throw new Error(code)
-			}
-		})
-	}
+                    debug('login Success')
+                    resolve(this.BaseRequest)
+                })
+            })
+        })
+    }
 
-	checkLogin() {
-		const url = `https://login.weixin.qq.com/cgi-bin/mmwebwx-bin/login?tip=0&uuid=${this.uuid}&_=${_getTime()}`
-		return this.axios({
-			method: 'GET',
-			url: url
-		}).then(res => {
-			let re = /window.code=(\d+);/
-			let pm = res.data.match(re)
-			let code = pm[1]
+    init() {
+        const url = this.baseURI + `/webwxinit?pass_ticket=${this.passTicket}&skey=${this.skey}&r=${_getTime()}`
+        const params = {
+            BaseRequest: this.BaseRequest
+        }
 
-			if (code == 200) {
-				let re = /window.redirect_uri="(\S+?)";/
-				let pm = res.data.match(re)
-				this.redirectURI = pm[1] + '&fun=new'
-				this.baseURI = this.redirectURI.substring(0, this.redirectURI.lastIndexOf("/"))
-				if (this.baseURI[10] == 2) {
-					this.webpush = 'webpush2'
-				} else {
-					this.webpush = 'webpush'
-				}
-				return code
-			} else if (code == 408) {
-				throw new Error(code)
-			} else {
-				throw new Error(code)
-			}
-		})
-	}
+        return this.axios({
+            method: 'POST',
+            url: url,
+            data: params,
+            headers: {
+                'ContentType': 'application/json; charset=UTF-8'
+            }
+        }).then(res => {
+            let data = res.data
+            this.SyncKey = data['SyncKey']
+            this.user = data['User']
 
-	login() {
-		return new Promise((resolve, reject) => {
-			this.axios({
-				method: 'GET',
-				url: this.redirectURI
-			}).then(res => {
-				xmlPrase(res.data, (err, result) => {
-					const data = result['error']
+            let synckeylist = []
+            for (let e = this.SyncKey['List'], o = 0, n = e.length; n > o; o++)
+                synckeylist.push(e[o]['Key'] + "_" + e[o]['Val'])
+            this.synckey = synckeylist.join("|")
 
-					this.skey = data['skey'][0]
-					this.sid = data['wxsid'][0]
-					this.uin = data['wxuin'][0]
-					this.passTicket = data['pass_ticket'][0]
+            debug('wechatInit Success')
 
-					this.BaseRequest = {
-						'Uin': parseInt(this.uin, 10),
-						'Sid': this.sid,
-						'Skey': this.skey,
-						'DeviceID': this.deviceId
-					}
+            return data['BaseResponse']['Ret'] == 0
+        })
+    }
 
-					debug('login Success')
-					resolve(this.BaseRequest)
-				})
-			})
-		})
-	}
+    notifyMobile() {
+        let url = this.baseURI + `/webwxstatusnotify?lang=zh_CN&pass_ticket=${this.passTicket}`
+        let params = {
+            'BaseRequest': this.BaseRequest,
+            "Code": 3,
+            "FromUserName": this.user['UserName'],
+            "ToUserName": this.user['UserName'],
+            "ClientMsgId": _getTime()
+        }
 
-	init() {
-		const url = this.baseURI + `/webwxinit?pass_ticket=${this.passTicket}&skey=${this.skey}&r=${_getTime()}`
-		const params = {
-			BaseRequest: this.BaseRequest
-		}
+        return this.axios({
+            method: 'POST',
+            url: url,
+            data: params,
+            headers: {
+                'ContentType': 'application/json; charset=UTF-8'
+            }
+        }).then(res => {
+            let data = res.data
+            debug('notifyMobile Success')
+            return data['BaseResponse']['Ret'] == 0
+        })
+    }
 
-		return this.axios({
-			method: 'POST',
-			url: url,
-			data: params,
-			headers: {
-				'ContentType': 'application/json; charset=UTF-8'
-			}
-		}).then(res => {
-			let data = res.data
-			this.SyncKey = data['SyncKey']
-			this.user = data['User']
+    getContact() {
+        let url = this.baseURI + `/webwxgetcontact?lang=zh_CN&pass_ticket=${this.passTicket}&seq=0&skey=${this.skey}&r=${_getTime()}`
+        return this.axios({
+                url: url,
+                method: 'POST',
+                headers: {
+                    'ContentType': 'application/json; charset=UTF-8'
+                }
+            }).then(res => {
+                let data = res.data
+                this.memberList = data['MemberList']
 
-			let synckeylist = []
-			for (let e = this.SyncKey['List'], o = 0, n = e.length; n > o; o++)
-				synckeylist.push(e[o]['Key'] + "_" + e[o]['Val'])
-			this.synckey = synckeylist.join("|")
+                debug(this.memberList.length)
+            })
+            .catch(err => {
+                debug(err)
+            })
+    }
 
-			debug('wechatInit Success')
+    sync() {
+        let url = this.baseURI + `/webwxsync?sid=${this.sid}&skey=${this.skey}&pass_ticket=${this.passTicket}`
+        let params = {
+            'BaseRequest': this.BaseRequest,
+            "SyncKey": this.SyncKey,
+            'rr': ~_getTime()
+        }
 
-			return data['BaseResponse']['Ret'] == 0
-		})
-	}
+        return this.axios({
+            method: 'POST',
+            url: url,
+            data: params,
+            headers: {
+                'ContentType': 'application/json; charset=UTF-8'
+            }
+        }).then(res => {
+            let data = res.data
+            if (data['BaseResponse']['Ret'] == 0) {
+                this.SyncKey = data['SyncKey']
+                let synckeylist = []
+                for (let e = this.SyncKey['List'], o = 0, n = e.length; n > o; o++)
+                    synckeylist.push(e[o]['Key'] + "_" + e[o]['Val'])
+                this.synckey = synckeylist.join("|")
+            }
 
-	notifyMobile() {
-		let url = this.baseURI + `/webwxstatusnotify?lang=zh_CN&pass_ticket=${this.passTicket}`
-		let params = {
-			'BaseRequest': this.BaseRequest,
-			"Code": 3,
-			"FromUserName": this.user['UserName'],
-			"ToUserName": this.user['UserName'],
-			"ClientMsgId": _getTime()
-		}
+            return data
+        })
+    }
 
-		return this.axios({
-			method: 'POST',
-			url: url,
-			data: params,
-			headers: {
-				'ContentType': 'application/json; charset=UTF-8'
-			}
-		}).then(res => {
-			let data = res.data
-			debug('notifyMobile Success')
-			return data['BaseResponse']['Ret'] == 0
-		})
-	}
+    syncCheck() {
+        let url = `https://${this.webpush}.weixin.qq.com/cgi-bin/mmwebwx-bin/synccheck`
 
-	getContact() {
-		let url = this.baseURI + `/webwxgetcontact?lang=zh_CN&pass_ticket=${this.passTicket}&seq=0&skey=${this.skey}&r=${_getTime()}`
-		return this.axios({
-				url: url,
-				method: 'POST',
-				headers: {
-					'ContentType': 'application/json; charset=UTF-8'
-				}
-			}).then(res => {
-				let data = res.data
-				this.memberList = data['MemberList']
+        return this.axios({
+            method: 'GET',
+            url: url,
+            params: {
+                'r': _getTime(),
+                'sid': this.sid,
+                'uin': this.uin,
+                'skey': this.skey,
+                'deviceid': this.deviceId,
+                'synckey': this.synckey,
+                '_': _getTime(),
+            },
+        }).then(res => {
+            let re = /window.synccheck={retcode:"(\d+)",selector:"(\d+)"}/
+            let pm = res.data.match(re)
 
-				debug(this.memberList.length)
-			})
-			.catch(err => {
-				debug(err)
-			})
-	}
+            let retcode = pm[1]
+            let selector = pm[2]
 
-	sync() {
-		let url = this.baseURI + `/webwxsync?sid=${this.sid}&skey=${this.skey}&pass_ticket=${this.passTicket}`
-		let params = {
-			'BaseRequest': this.BaseRequest,
-			"SyncKey": this.SyncKey,
-			'rr': ~_getTime()
-		}
+            return {
+                retcode, selector
+            }
+        })
+    }
 
-		return this.axios({
-			method: 'POST',
-			url: url,
-			data: params,
-			headers: {
-				'ContentType': 'application/json; charset=UTF-8'
-			}
-		}).then(res => {
-			let data = res.data
-			if (data['BaseResponse']['Ret'] == 0) {
-				this.SyncKey = data['SyncKey']
-				let synckeylist = []
-				for (let e = this.SyncKey['List'], o = 0, n = e.length; n > o; o++)
-					synckeylist.push(e[o]['Key'] + "_" + e[o]['Val'])
-				this.synckey = synckeylist.join("|")
-			}
+    handleMsg(data) {
+        debug('Receive ', data['AddMsgList'].length, 'Message')
 
-			return data
-		})
-	}
+        data['AddMsgList'].forEach((msg) => {
+            let type = msg['MsgType']
+            let fromUser = this._getUserRemarkName(msg['FromUserName'])
+            let content = msg['Content']
 
-	syncCheck() {
-		let url = `https://${this.webpush}.weixin.qq.com/cgi-bin/mmwebwx-bin/synccheck`
+            switch (type) {
+                case 51:
+                    debug(' Message: Wechat Init')
+                    break
+                case 1:
+                    if (this._checkCredible(msg['FromUserName'])) {
+                        this._tuning(msg['Content']).then((reply) => {
+                            debug(reply)
+                            this.sendMsg(reply, msg['FromUserName'])
+                        })
+                    }
 
-		return this.axios({
-			method: 'GET',
-			url: url,
-			params: {
-				'r': _getTime(),
-				'sid': this.sid,
-				'uin': this.uin,
-				'skey': this.skey,
-				'deviceid': this.deviceId,
-				'synckey': this.synckey,
-				'_': _getTime(),
-			},
-		}).then(res => {
-			let re = /window.synccheck={retcode:"(\d+)",selector:"(\d+)"}/
-			let pm = res.data.match(re)
+                    debug(' Message: ', fromUser, ': ', content)
+                    break
+            }
+        })
+    }
 
-			let retcode = pm[1]
-			let selector = pm[2]
+    syncPolling() {
+        this.syncCheck().then((state) => {
+            if (state.retcode == '1100') {
+                debug('Logout')
+            } else if (state.retcode == '0') {
+                if (state.selector == '2') {
+                    this.sync().then((data) => {
+                        if (data) {
+                            this.handleMsg(data)
+                        }
+                    })
+                } else if (state.selector == '7') {
+                    debug('Mobile Open')
+                } else if (state.selector == '0') {
+                    debug('Normal')
+                }
+            }
 
-			return {
-				retcode, selector
-			}
-		})
-	}
+            setTimeout(() => {
+                this.syncPolling()
+            }, 1000)
+        })
+    }
 
-	handleMsg(data) {
-		debug('Receive ', data['AddMsgList'].length, 'Message')
+    _checkCredible(uid) {
+        return this.credibleUser.has(uid)
+    }
 
-		data['AddMsgList'].forEach((msg) => {
-			let type = msg['MsgType']
-			let fromUser = this._getUserRemarkName(msg['FromUserName'])
-			let content = msg['Content']
+    _getUserRemarkName(uid) {
+        let name = ''
 
-			switch (type) {
-				case 51:
-					debug(' Message: Wechat Init')
-					break
-				case 1:
-					if (this._checkCredible(msg['FromUserName'])) {
-						this._tuning(msg['Content']).then((reply) => {
-							debug(reply)
-							this.sendMsg(reply, msg['FromUserName'])
-						})
-					}
+        this.memberList.forEach((member) => {
+            if (member['UserName'] == uid) {
+                name = member['RemarkName'] ? member['RemarkName'] : member['NickName']
+            }
+        })
 
-					debug(' Message: ', fromUser, ': ', content)
-					break
-			}
-		})
-	}
+        return name
+    }
 
-	syncPolling() {
-		this.syncCheck().then((state) => {
-			if (state.retcode == '1100') {
-				debug('Logout')
-			} else if (state.retcode == '0') {
-				if (state.selector == '2') {
-					this.sync().then((data) => {
-						if (data) {
-							this.handleMsg(data)
-						}
-					})
-				} else if (state.selector == '7') {
-					debug('Mobile Open')
-				} else if (state.selector == '0') {
-					debug('Normal')
-				}
-			}
+    _tuning(word) {
+        const url = encodeURI(`http://www.tuling123.com/openapi/api?key=2ba083ae9f0016664dfb7ed80ba4ffa0&info=${word}`)
+        return this.axios({
+            url: url,
+            method: 'GET'
+        }).then(res => {
+            const data = res.data
+            if (data.code == 100000) {
+                return data.text + '[微信机器人]'
+            }
+            return "现在思路很乱，最好联系下我哥 T_T..."
+        })
+    }
 
-			setTimeout(()=>{
-				this.syncPolling()
-			}, 1000)
-		})
-	}
+    _credibleHint(uid) {
+        this.sendMsg('我是' + this.user['NickName'] + '的机器人小助手，欢迎调戏！如有打扰请多多谅解', uid)
+    }
 }
