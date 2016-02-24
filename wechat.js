@@ -1,8 +1,8 @@
 "use strict"
 var axios = require('axios')
-var tough = require('tough-cookie')
 var debug = require('debug')('wechat')
 var xmlPrase = require('xml2js').parseString
+var CM = require('cookie-manager');
 
 const _getTime = () => new Date().getTime()
 
@@ -29,10 +29,9 @@ exports = module.exports = class wechat {
 
         this.axios = axios
         if (typeof window == "undefined") {
-            this.cookieJar = new tough.CookieJar()
-
+            this.cm = new CM()
             this.axios.interceptors.request.use(config => {
-                config.headers['cookie'] = this.cookieJar.getCookieStringSync(config.url)
+                config.headers['cookie'] = this.cm.prepare(config.url)
                 return config
             }, err => {
                 return Promise.reject(err)
@@ -40,12 +39,8 @@ exports = module.exports = class wechat {
 
             this.axios.interceptors.response.use(res => {
                 let cookies = res.headers['set-cookie']
-                if (cookies instanceof Array)
-                    cookies.forEach(cookie => {
-                        this.cookieJar.setCookieSync(cookie, res.config.url)
-                    })
-                else if (typeof(cookies) == 'String')
-                    this.cookieJar.setCookieSync(cookies, res.config.url)
+                if (cookies)
+                    this.cm.store(res.config.url, cookies)
                 return res
             }, err => {
                 return Promise.reject(err)
