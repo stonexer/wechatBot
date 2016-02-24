@@ -1,27 +1,10 @@
 doctype html
 html
   head
-    title= title
-    meta(name='viewport', content='width=device-width, initial-scale=1')
-    script(src='/static/javascripts/jquery-1.12.0.min.js')
-    script(src='/static/javascripts/bootstrap.min.js')
-    script(src='/static/javascripts/jquery.qrcode.min.js')
+    title= 微信机器人
     link(rel='stylesheet', href='/static/stylesheets/bootstrap.min.css')
     link(rel='stylesheet', href='/static/stylesheets/style.css')
-  body
-    nav.navbar.navbar-default.navbar-static-top(role='navigation')
-      .container
-        .navbar-header
-          a.navbar-brand(href='/') 微信机器人
-        #bs-example-navbar-collapse-1(class='collapse navbar-collapse')
-          ul(class='nav navbar-nav')
-            li: a(href="/") 微信机器人
-          //- ul.nav.navbar-nav.navbar-right
-          //-   if user
-          //-     li: a(href="#") #{user.get('username')}
-          //-     li: a(href="/users/logout") 登出
-          //-   else
-          //-     li: a(href="/users/login") 登录
-          //-     li: a(href="/users/register") 注册
-    .container
-      block content
+body
+  app
+    script(src='/static/javascripts/build/qrcode.min.js')
+    script(src='/static/javascripts/build/app.js')

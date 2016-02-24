@@ -52,9 +52,9 @@ exports = module.exports = class wechat {
 
     this.memberList.forEach((member) => {
       members.push({
-        'username': member['UserName'],
-        'remarkname': member['RemarkName'],
-        'nickname': member['NickName']
+        username: member['UserName'],
+        nickname: member['RemarkName'] ? member['RemarkName'] : member['NickName'].replace(/<\/?[^>]*>/g,''),
+        switch: false
       })
     })
 
@@ -62,11 +62,18 @@ exports = module.exports = class wechat {
   }
 
   switchUser(uid) {
-    this.credibleUser.add(uid)
-    this._credibleHint(uid)
+    if( this.credibleUser.has(uid) ) {
+      this.credibleUser.delete(uid)
+      this.sendMsg('机器人小助手和您拜拜咯，下次再见！', uid)
 
-    debug('Add', this.credibleUser)
-    return 0
+      debug('Add', this.credibleUser)
+    } else {
+      this.credibleUser.add(uid)
+      this.sendMsg('我是' + this.user['NickName'] + '的机器人小助手，欢迎调戏！如有打扰请多多谅解', uid)
+
+      debug('Add', this.credibleUser)
+    }
+    return 200
   }
 
   sendMsg(msg, to) {
@@ -447,7 +454,4 @@ exports = module.exports = class wechat {
     })
   }
 
-  _credibleHint(uid) {
-    this.sendMsg('我是' + this.user['NickName'] + '的机器人小助手，欢迎调戏！如有打扰请多多谅解', uid)
-  }
 }

@@ -12,26 +12,69 @@ app.use('/static', express.static('public'));
 let botInstanceArr = {}
 
 app.get('/', (req, res) => {
-	let bot = new wechat()
-	bot.getUUID().then((uuid) => {
-		res.render('login', {
-			'message': uuid
-		});
+		res.render('layout')
+})
 
+app.get('/uuid', (req, res) => {
+	let bot = new wechat()
+
+	bot.getUUID().then((uuid) => {
+		res.send({
+			uuid: uuid
+		});
 		botInstanceArr[uuid] = bot
 		debug('New Connect', Object.getOwnPropertyNames(botInstanceArr).length)
 	})
 })
 
-app.get('/:cid/members', (req, res) => {
-	let bot = botInstanceArr[req.params.cid]
-	if(bot) {
-		res.render('members', {
-			'members': bot.friendList
+app.get('/login/:uuid', (req, res) => {
+	let bot = botInstanceArr[req.params.uuid]
+
+	bot.checkScan()
+	.then(()=>bot.checkLogin())
+	.then(()=>bot.login())
+	.then(()=>bot.init())
+	.then(()=>bot.notifyMobile())
+	.then(()=>bot.getContact())
+	.then(()=>{
+		res.send({
+			code: 200
+		})
+		return bot.syncPolling()
+	})
+	.catch((err) => {
+		delete botInstanceArr[req.params.cid]
+		debug('Close Connect', Object.getOwnPropertyNames(botInstanceArr).length)
+		res.send({
+			code: 400,
+			err: err
+		})
+	})
+})
+
+app.get('/members/:uuid', (req, res) => {
+	let bot = botInstanceArr[req.params.uuid]
+	let members = bot.friendList
+
+	if(members) {
+		res.send({
+			code: 200,
+			members: members
 		})
 	} else {
-		res.redirect('/');
+		res.send({
+			code: 400
+		})
 	}
+})
+
+app.get('/members/:uuid/:uid', (req, res) => {
+	let bot = botInstanceArr[req.params.uuid]
+	let r = bot.switchUser(req.params.uid)
+
+	res.send({
+		code:r
+	})
 })
 
 app.get('/:cid/api/checkScan', (req, res) => {
@@ -61,6 +104,17 @@ app.get('/:cid/api/checkLogin', (req, res) => {
 		debug(err)
 		res.send(err)
 	})
+})
+
+app.get('/:cid/members', (req, res) => {
+	let bot = botInstanceArr[req.params.cid]
+	if(bot) {
+		res.render('members', {
+			'members': bot.friendList
+		})
+	} else {
+		res.redirect('/');
+	}
 })
 
 app.get('/:cid/api/member/add/:uid', (req, res) => {
