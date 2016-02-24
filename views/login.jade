@@ -1,23 +1,23 @@
 extends layout
 
 block content
-	div#qrcode.text-center
+  div#qrcode.text-center
 
-	script(type='text/javascript').
-		$('#qrcode').qrcode('https://login.weixin.qq.com/l/' + '#{message}')
-		$.get('#{message}/api/checkScan', function(data){
-			if(data == 201) {
-				$.get('#{message}/api/checkLogin', function(data){
-					console.log(data)
-					if(data == 200) {
-						$('#qrcode').hide()
-						window.location.href = '#{message}/members'
-					} else {
-						alert('登陆超时')
-					}
-				})
-			} else {
-				alert('登陆超时')
-				window.location.href = '/'
-			}
-		})
+  script(type='text/javascript').
+    $('#qrcode').qrcode('https://login.weixin.qq.com/l/' + '#{message}')
+    $.get('#{message}/api/checkScan', function(data){
+      if(data == 201) {
+        $.get('#{message}/api/checkLogin', function(data){
+          console.log(data)
+          if(data == 200) {
+            $('#qrcode').hide()
+            window.location.href = '#{message}/members'
+          } else {
+            alert('登陆超时')
+          }
+        })
+      } else {
+        alert('登陆超时')
+        window.location.href = '/'
+      }
+    })
