@@ -114,8 +114,7 @@ exports = module.exports = class wechat {
     let params = {
       'appid': 'wx782c26e4c19acffb',
       'fun': 'new',
-      'lang': 'zh_CN',
-      '_': _getTime()
+      'lang': 'zh_CN'
     }
     return this.axios({
       method: 'POST',
@@ -352,8 +351,7 @@ exports = module.exports = class wechat {
         'uin': this.uin,
         'skey': this.skey,
         'deviceid': this.deviceId,
-        'synckey': this.synckey,
-        '_': _getTime(),
+        'synckey': this.synckey
       },
     }).then(res => {
       let re = /window.synccheck={retcode:"(\d+)",selector:"(\d+)"}/
@@ -398,27 +396,33 @@ exports = module.exports = class wechat {
   }
 
   syncPolling() {
-    this.syncCheck().then((state) => {
-      if (state.retcode == '1100') {
-        debug('Logout')
+    this.syncCheck().then(state => {
+      if (state.retcode == '1100' || state.retcode == '1101') {
+        this.logout(state.retcode == '1100' ? '你在手机上登出了微信' : '你在其他地方登录了 WEB 版微信')
       } else if (state.retcode == '0') {
         if (state.selector == '2') {
-          this.sync().then((data) => {
-            if (data) {
-              this.handleMsg(data)
-            }
+          this.sync().then(data => {
+            this.handleMsg(data)
+            this.syncPolling()
+          }).catch(err => {
+            throw err
           })
         } else if (state.selector == '7') {
           debug('Mobile Open')
+          this.syncPolling()
         } else if (state.selector == '0') {
           debug('Normal')
+          this.syncPolling()
         }
       }
-
-      setTimeout(() => {
-        this.syncPolling()
-      }, 1000)
+    }).catch(err => {
+      debug(err)
+      this.logout(err)
     })
+  }
+
+  logout(msg) {
+    debug('Logout', msg)
   }
 
   _checkCredible(uid) {
