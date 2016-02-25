@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Resource from 'vue-resource' 
+import Resource from 'vue-resource'
 
 import App from './components/App.vue'
 import LoginView from './components/LoginView.vue'

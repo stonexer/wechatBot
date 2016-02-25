@@ -14088,7 +14088,7 @@
 	  var hotAPI = require("vue-hot-reload-api")
 	  hotAPI.install(require("vue"), true)
 	  if (!hotAPI.compatible) return
-	  var id = "/Users/EmmaStone/Codes/vueWechatBot/public/javascripts/src/components/App.vue"
+	  var id = "/Users/EmmaStone/Codes/wechatBot/public/javascripts/src/components/App.vue"
 	  if (!module.hot.data) {
 	    hotAPI.createRecord(id, module.exports)
 	  } else {
@@ -14138,7 +14138,7 @@
 	  var hotAPI = require("vue-hot-reload-api")
 	  hotAPI.install(require("vue"), true)
 	  if (!hotAPI.compatible) return
-	  var id = "/Users/EmmaStone/Codes/vueWechatBot/public/javascripts/src/components/LoginView.vue"
+	  var id = "/Users/EmmaStone/Codes/wechatBot/public/javascripts/src/components/LoginView.vue"
 	  if (!module.hot.data) {
 	    hotAPI.createRecord(id, module.exports)
 	  } else {
@@ -16596,7 +16596,7 @@
 	  var hotAPI = require("vue-hot-reload-api")
 	  hotAPI.install(require("vue"), true)
 	  if (!hotAPI.compatible) return
-	  var id = "/Users/EmmaStone/Codes/vueWechatBot/public/javascripts/src/components/MembersView.vue"
+	  var id = "/Users/EmmaStone/Codes/wechatBot/public/javascripts/src/components/MembersView.vue"
 	  if (!module.hot.data) {
 	    hotAPI.createRecord(id, module.exports)
 	  } else {
@@ -16688,7 +16688,7 @@
 	  var hotAPI = require("vue-hot-reload-api")
 	  hotAPI.install(require("vue"), true)
 	  if (!hotAPI.compatible) return
-	  var id = "/Users/EmmaStone/Codes/vueWechatBot/public/javascripts/src/components/Member.vue"
+	  var id = "/Users/EmmaStone/Codes/wechatBot/public/javascripts/src/components/Member.vue"
 	  if (!module.hot.data) {
 	    hotAPI.createRecord(id, module.exports)
 	  } else {
@@ -17056,7 +17056,7 @@
 /* 116 */
 /***/ function(module, exports) {
 
-	module.exports = "\n<div>\n  <h1>联系人列表</h1>\n\n  <nav class=\"navbar navbar-default navbar-fixed\">\n    <form class=\"navbar-form navbar-left\" role=\"search\">\n      <div class=\"form-group\">\n        <input type=\"text\" class=\"form-control\" placeholder=\"查找\" v-model=\"critiria\">\n      </div>\n    </form>\n  </nav>\n\n  <p>该版本为内部测试版本，如需退出请点击手机微信中的退出网页版</p>\n\n  <div class=\"row\">\n    <member\n      v-for=\"member in showMembers\"\n      :member=\"member\"\n      :index=\"$index\">\n    </member>\n  </div>\n\n</div>\n";
+	module.exports = "\n<div>\n  <nav class=\"navbar navbar-default\">\n    <div class=\"navbar-header\">\n      <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#bs-example-navbar-collapse-1\" aria-expanded=\"false\">\n        <span class=\"sr-only\">Toggle navigation</span>\n        <span class=\"icon-bar\"></span>\n        <span class=\"icon-bar\"></span>\n        <span class=\"icon-bar\"></span>\n      </button>\n      <a class=\"navbar-brand\" href=\"#\">联系人列表</a>\n    </div>\n\n    <form class=\"navbar-form navbar-left\" role=\"search\">\n      <div class=\"form-group\">\n        <input type=\"text\" class=\"form-control\" placeholder=\"查找\" v-model=\"critiria\">\n      </div>\n    </form>\n\n    <p class=\"navbar-text navbar-left\">该版本为内部测试版本，如需退出请点击手机微信中的退出网页版</p>\n  </nav>\n\n  <div class=\"row\">\n    <member\n      v-for=\"member in showMembers\"\n      :member=\"member\"\n      :index=\"$index\">\n    </member>\n  </div>\n\n</div>\n";
 
 /***/ }
 /******/ ]);

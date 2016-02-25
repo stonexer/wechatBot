@@ -1,16 +1,24 @@
 <template>
   <div>
-    <h1>联系人列表</h1>
+    <nav class="navbar navbar-default">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">联系人列表</a>
+      </div>
 
-    <nav class="navbar navbar-default navbar-fixed">
       <form class="navbar-form navbar-left" role="search">
         <div class="form-group">
           <input type="text" class="form-control" placeholder="查找" v-model="critiria">
         </div>
       </form>
-    </nav>
 
-    <p>该版本为内部测试版本，如需退出请点击手机微信中的退出网页版</p>
+      <p class="navbar-text navbar-left">该版本为内部测试版本，如需退出请点击手机微信中的退出网页版</p>
+    </nav>
 
     <div class="row">
       <member
