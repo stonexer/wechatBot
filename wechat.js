@@ -30,7 +30,7 @@ exports = module.exports = class wechat {
     if (typeof window == "undefined") {
       this.cm = new CM()
       this.axios.interceptors.request.use(config => {
-        config.headers['cookie'] = this.cm.prepare(config.url)
+        config.headers['cookie'] = decodeURIComponent(this.cm.prepare(config.url))
         return config
       }, err => {
         return Promise.reject(err)
@@ -53,7 +53,7 @@ exports = module.exports = class wechat {
     this.memberList.forEach((member) => {
       members.push({
         username: member['UserName'],
-        nickname: member['RemarkName'] ? member['RemarkName'] : member['NickName'].replace(/<\/?[^>]*>/g,''),
+        nickname: member['RemarkName'] ? member['RemarkName'] : member['NickName'].replace(/<\/?[^>]*>/g, ''),
         switch: false
       })
     })
@@ -62,7 +62,7 @@ exports = module.exports = class wechat {
   }
 
   switchUser(uid) {
-    if( this.credibleUser.has(uid) ) {
+    if (this.credibleUser.has(uid)) {
       this.credibleUser.delete(uid)
       this.sendMsg('机器人小助手和您拜拜咯，下次再见！', uid)
 
