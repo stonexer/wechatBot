@@ -5,13 +5,14 @@
   "main": "app.js",
   "dependencies": {
     "axios": "^0.9.1",
+    "cookie-manager": "0.0.16",
     "debug": "^2.2.0",
     "express": "^4.13.4",
     "jade": "^1.11.0",
-    "cookie-manager": "0.0.16",
     "vue": "^1.0.16",
     "vue-resource": "^0.7.0",
     "vue-router": "^0.7.11",
+    "wechat4u": "^0.1.2",
     "xml2js": "^0.4.16"
   },
   "devDependencies": {
@@ -34,5 +35,14 @@
     "webpack": "^1.12.2",
     "webpack-dev-server": "^1.12.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stonexer/wechatBot.git"
+  },
+  "license": "MIT",
+  "keywords": [
+    "wechat",
+    "weixin"
+  ],
   "author": "SToneX"
 }

@@ -1,6 +1,6 @@
 "use strict"
-var express = require("express")
-var wechat = require('./wechat')
+var express = require('express')
+var wechat = require('wechat4u')
 var debug = require('debug')('app')
 
 const app = express()
