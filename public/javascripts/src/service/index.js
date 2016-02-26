@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { Promise } from 'es6-promise'
 
 const service = {}
 

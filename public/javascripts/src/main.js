@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Resource from 'vue-resource'
 
 import App from './components/App.vue'
 import LoginView from './components/LoginView.vue'
@@ -8,7 +7,6 @@ import MembersView from './components/MembersView.vue'
 
 // install router & resource
 Vue.use(Router)
-Vue.use(Resource)
 
 // routing
 var router = new Router()

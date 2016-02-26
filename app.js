@@ -43,7 +43,7 @@ app.get('/login/:uuid', (req, res) => {
 		return bot.syncPolling()
 	})
 	.catch((err) => {
-		delete botInstanceArr[req.params.cid]
+		delete botInstanceArr[req.params.uuid]
 		debug('Close Connect', Object.getOwnPropertyNames(botInstanceArr).length)
 		res.send({
 			code: 400,
@@ -91,14 +91,9 @@ app.get('/:cid/api/checkScan', (req, res) => {
 app.get('/:cid/api/checkLogin', (req, res) => {
 	let bot = botInstanceArr[req.params.cid]
 	
-	bot.checkLogin()
-	.then(()=>bot.login())
-	.then(()=>bot.init())
-	.then(()=>bot.notifyMobile())
-	.then(()=>bot.getContact())
+	bot.start()
 	.then(()=>{
 		res.send('200')
-		return bot.syncPolling()
 	})
 	.catch((err) => {
 		debug(err)
