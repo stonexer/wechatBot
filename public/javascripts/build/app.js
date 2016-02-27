@@ -13722,7 +13722,7 @@
 /* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
+	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
 	 * @overview es6-promise - a tiny implementation of Promises/A+.
 	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
 	 * @license   Licensed under MIT license
@@ -14869,7 +14869,7 @@
 	
 	
 	// module
-	exports.push([module.id, ".member {\n  height: 50px;\n  padding: 5px;\n}\n.member .nickname {\n  float: left;\n}\n.member button {\n  float: right;\n}\n", "", {"version":3,"sources":["/./public/javascripts/src/components/public/javascripts/src/components/Member.vue","/./public/javascripts/src/components/Member.vue"],"names":[],"mappings":"AACA;EACE,aAAA;EACA,aAAA;CCAD;ADCC;EACE,YAAA;CCCH;ADAC;EACE,aAAA;CCEH","file":"Member.vue","sourcesContent":["\n.member\n  height 50px\n  padding 5px\n  .nickname\n    float left\n  button\n    float right\n",".member {\n  height: 50px;\n  padding: 5px;\n}\n.member .nickname {\n  float: left;\n}\n.member button {\n  float: right;\n}\n"],"sourceRoot":"webpack://"}]);
+	exports.push([module.id, ".member {\n  height: 50px;\n  padding: 6px;\n}\n.member .nickname {\n  float: left;\n  margin-top: 5px;\n}\n.member button {\n  float: right;\n}\n", "", {"version":3,"sources":["/./public/javascripts/src/components/public/javascripts/src/components/Member.vue","/./public/javascripts/src/components/Member.vue"],"names":[],"mappings":"AACA;EACE,aAAA;EACA,aAAA;CCAD;ADCC;EACE,YAAA;EACA,gBAAA;CCCH;ADAC;EACE,aAAA;CCEH","file":"Member.vue","sourcesContent":["\n.member\n  height 50px\n  padding 6px\n  .nickname\n    float left\n    margin-top 5px\n  button\n    float right\n",".member {\n  height: 50px;\n  padding: 6px;\n}\n.member .nickname {\n  float: left;\n  margin-top: 5px;\n}\n.member button {\n  float: right;\n}\n"],"sourceRoot":"webpack://"}]);
 	
 	// exports
 

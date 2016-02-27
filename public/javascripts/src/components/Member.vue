@@ -36,9 +36,10 @@ module.exports = {
 <style lang="stylus">
 .member
   height 50px
-  padding 5px
+  padding 6px
   .nickname
     float left
+    margin-top 5px
   button
     float right
 </style>
