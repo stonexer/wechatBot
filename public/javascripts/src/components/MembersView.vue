@@ -46,6 +46,7 @@ module.exports = {
   data() {
     return {
       members: {},
+      showMembers: {},
       critiria: ''
     }
   },
@@ -53,16 +54,23 @@ module.exports = {
   methods: {
     getMembers() {
       return service.getMembers().then(members => {
-        this.members = members
+        this.showMembers = this.members = members
       })
     }
   },
 
-  computed: {
-    showMembers () {
-      return this.members.filter((member) => {
+  watch: {
+    critiria () {
+      this.showMembers = this.members.filter((member) => {
         return member.nickname.indexOf(this.critiria) > -1
       })
+    }
+  },
+
+  events: {
+    'switch-member': function (index) {
+      let member = this.showMembers.splice(index,1)
+      this.showMembers.unshift(member[0])
     }
   },
 

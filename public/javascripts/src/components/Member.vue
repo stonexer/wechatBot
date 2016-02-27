@@ -27,6 +27,9 @@ module.exports = {
     switchMember() {
       service.switchMember(this.member.username).then(() => {
         this.member.switch = !this.member.switch
+        if(this.member.switch) {
+          this.$dispatch('switch-member', this.index)
+        }
       })
     }
   }

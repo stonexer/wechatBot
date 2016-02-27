@@ -13722,7 +13722,7 @@
 /* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_RESULT__;var require;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
+	var require;var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(process, global, module) {/*!
 	 * @overview es6-promise - a tiny implementation of Promises/A+.
 	 * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
 	 * @license   Licensed under MIT license
@@ -14769,6 +14769,7 @@
 	  data: function data() {
 	    return {
 	      members: {},
+	      showMembers: {},
 	      critiria: ''
 	    };
 	  },
@@ -14779,18 +14780,25 @@
 	      var _this = this;
 	
 	      return _service2.default.getMembers().then(function (members) {
-	        _this.members = members;
+	        _this.showMembers = _this.members = members;
 	      });
 	    }
 	  },
 	
-	  computed: {
-	    showMembers: function showMembers() {
+	  watch: {
+	    critiria: function critiria() {
 	      var _this2 = this;
 	
-	      return this.members.filter(function (member) {
+	      this.showMembers = this.members.filter(function (member) {
 	        return member.nickname.indexOf(_this2.critiria) > -1;
 	      });
+	    }
+	  },
+	
+	  events: {
+	    'switch-member': function switchMember(index) {
+	      var member = this.showMembers.splice(index, 1);
+	      this.showMembers.unshift(member[0]);
 	    }
 	  },
 	
@@ -15179,6 +15187,9 @@
 	
 	      _service2.default.switchMember(this.member.username).then(function () {
 	        _this.member.switch = !_this.member.switch;
+	        if (_this.member.switch) {
+	          _this.$dispatch('switch-member', _this.index);
+	        }
 	      });
 	    }
 	  }
