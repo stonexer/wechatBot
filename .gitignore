@@ -34,4 +34,4 @@ node_modules
 
 localData
 
-public/javascripts/build/
+public/javascripts/build/*
