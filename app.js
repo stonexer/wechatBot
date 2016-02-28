@@ -31,6 +31,10 @@ app.get('/login/:uuid', (req, res) => {
   let bot = botInstanceArr[req.params.uuid]
 
   bot.start().then(() => {
+  	bot.on('logout', () => {
+  		delete botInstanceArr[req.params.uuid]
+  		debug('Close Logout Connect')
+  	})
     res.send({
       code: 200
     })
@@ -58,7 +62,7 @@ app.get('/members/:uuid', (req, res) => {
       code: 400
     })
   }
- 
+
 })
 
 app.get('/members/:uuid/:uid', (req, res) => {
