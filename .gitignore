@@ -34,4 +34,5 @@ node_modules
 
 localData
 
-public/javascripts/build/*
+public/javascripts/build/app.js
+public/javascripts/build/app.js.map
