@@ -8,39 +8,25 @@ export default service
 let uuid = localStorage.uuid || ""
 
 service.getUUID = () => {
-	return axios.get('/uuid').then(res => {
-		uuid = res.data.uuid
-		localStorage.uuid = uuid
-		return uuid
+	return axios.get('/api/uuid').then(res => {
+		return uuid = localStorage.uuid = res.data
 	})
 }
 
 service.checkLogin = () => {
-	return axios.get('/login/'+uuid).then(res => {
-		if(res.data.code == 200) {
-			return Promise.resolve(200)
-		} else {
-			return Promise.reject(res.data.err)
-		}
-	})
+	return axios.get('/api/instance/'+uuid)
+}
+
+service.loginConfirm = () => {
+	return axios.get('/api/login/'+uuid)
 }
 
 service.getMembers = () => {
-	return axios.get('/members/'+uuid).then(res => {
-		if(res.data.code == 200) {
-			return Promise.resolve(res.data.members)
-		} else {
-			return Promise.reject(res.data.err)
-		}
+	return axios.get('/api/members/'+uuid).then(res => {
+		return res.data
 	})
 }
 
 service.switchMember = (memberId) => {
-	return axios.get('/members/'+uuid+'/'+memberId).then(res => {
-		if(res.data.code == 200) {
-			return Promise.resolve(res.data)
-		} else {
-			return Promise.reject(res.data.err)
-		}
-	})
+	return axios.get('/api/members/'+uuid+'/'+memberId)
 }

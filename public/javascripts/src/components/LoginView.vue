@@ -11,26 +11,35 @@ module.exports = {
     }
   },
   methods: {
+    alreadyLogin() {
+      return service.checkLogin()
+    },
   	showQR() {
   		return service.getUUID().then(uuid => {
 				const qrCode = 'https://login.weixin.qq.com/l/'  + uuid
 				new QRCode(this.$els.qrCode, qrCode);
-  		})
+  		}).catch(err => {
+        alert('生成二维码失败，请重试')
+        this.$router.go('/login');
+      })
   	},
   	login() {
-  		service.checkLogin().then(result => {
+  		service.loginConfirm().then(result => {
   			this.$router.go('/members');
   		}).catch(err => {
-  			console.log(err)
-  			alert('登陆失败')
+  			alert('登陆失败，请重试')
   			this.$router.go('/login');
   		})
   	}
   },
   created() {
-  	this.showQR().then(()=>{
-  		this.login()
-  	})
+    this.alreadyLogin().then(() => {
+      this.$router.go('/members');
+    }).catch(err => {
+      this.showQR().then(()=>{
+        this.login()
+      })
+    })
   }
 }
 </script>

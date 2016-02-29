@@ -77,6 +77,7 @@ module.exports = {
   route: {
     data () {
       this.getMembers().catch(() => {
+        alert('请先登录，谢谢！')
         this.$router.go('/login');
       })
     }

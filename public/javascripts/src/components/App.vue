@@ -32,8 +32,6 @@ module.exports = {
 			cid: ''
 		}
 	}
-
-
 }
 
 </script>
