@@ -36,6 +36,13 @@
     "webpack": "^1.12.2",
     "webpack-dev-server": "^1.12.0"
   },
+  "scripts": {
+    "build-webpack": "cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "build": "npm run build-webpack",
+    "watch": "webpack -w",
+    "start": "npm run watch & npm run debug",
+    "debug": "DEBUG=wechat,app node ./app.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/stonexer/wechatBot.git"
