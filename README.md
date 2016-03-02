@@ -2,14 +2,14 @@
 ![](http://7xr8pm.com1.z0.glb.clouddn.com/nodeWechat.png)
 
 开发前参考了 [WeiXinBot](https://github.com/Urinx/WeixinBot) 和 微信网页版源码。
-
+使用 [wechat4u](https://github.com/nodeWechat/wechat4u) 微信网页接口开发。
 
 ##测试开发
 
 仅尝试功能的话，可在demo服务器中测试，支持多用户实例。
 
- * [原始版本(with jQuery)](http://www.sitixi.com:3000) 
- * [vue版本(新功能)](http://www.sitixi.com:3001) 
+ * [vue版本](http://www.sitixi.com:3000) 
+ * [原始版本(with jQuery) 不在开发](http://www.sitixi.com:3001) 
 
 如果需要调试开发，首先安装好 node.js 开发环境，运行
 
