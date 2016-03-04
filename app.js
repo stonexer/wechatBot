@@ -1,6 +1,5 @@
 "use strict"
 const express = require('express')
-const wechat = require('wechat4u')
 const debug = require('debug')('app')
 
 const api = require('./routes/api')

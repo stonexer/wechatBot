@@ -39,7 +39,7 @@
     "build": "npm run build-webpack",
     "watch": "webpack -w",
     "start": "npm run watch & npm run debug",
-    "debug": "DEBUG=wechat,app node ./app.js"
+    "debug": "DEBUG=wechat,wxbot,app node ./app.js"
   },
   "repository": {
     "type": "git",
