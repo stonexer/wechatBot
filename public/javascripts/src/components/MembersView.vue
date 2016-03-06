@@ -11,7 +11,7 @@
 
     <nav class="navbar navbar-default">
       <div class="navbar-header">
-        <a class="navbar-brand" href="#">自动回复</a>
+        <a class="navbar-brand">自动回复</a>
       </div>
       <div class="collapse navbar-collapse">
         <form class="navbar-form navbar-left" role="search">

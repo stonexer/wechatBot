@@ -22,6 +22,8 @@ coverage
 
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
+public/javascripts/build/app.js
+public/javascripts/build/app.js.map
 
 # Dependency directory
 node_modules
@@ -33,6 +35,4 @@ node_modules
 .node_repl_history
 
 localData
-
-public/javascripts/build/app.js
-public/javascripts/build/app.js.map
+.vscode

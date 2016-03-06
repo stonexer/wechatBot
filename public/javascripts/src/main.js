@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import App from './components/App.vue'
+
 import LoginView from './components/LoginView.vue'
 import MembersView from './components/MembersView.vue'
 import SuperviseView from './components/SuperviseView.vue'
