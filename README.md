@@ -14,8 +14,9 @@
 如果需要调试开发，首先安装好 node.js 开发环境，运行
 
 ```shell
-npm install # 建议使用cnpm
-DEBUG=wechat,app node ./app.js
+npm install
+npm run build
+npm run debug
 ```
 
 即可运行实例在 `http://localhost:3000/` 。

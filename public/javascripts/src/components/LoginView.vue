@@ -2,7 +2,7 @@
   <div class="text-center" id="qrcode" v-el:qr-code></div>
 
   <div class="progress center-block">
-    <progressbar :now="waitTime" label :type=" waitTime > 50 ? 'success' : waitTime > 20 ? 'warning' : 'danger' " striped></progressbar>
+    <progressbar :now="waitTime" :type=" waitTime > 50 ? 'success' : waitTime > 20 ? 'warning' : 'danger' " striped animated></progressbar>
   </div>
 
   <alert
