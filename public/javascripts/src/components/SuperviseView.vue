@@ -51,7 +51,7 @@ module.exports = {
 
   methods: {
     getMembers() {
-      return service.getMembers().then(members => {
+      return service.superviseList().then(members => {
         this.showMembers = this.members = members
       })
     }

@@ -2,9 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import App from './components/App.vue'
-
 import LoginView from './components/LoginView.vue'
-import MembersView from './components/MembersView.vue'
+import AutoReplyView from './components/AutoReplyView.vue'
 import SuperviseView from './components/SuperviseView.vue'
 
 // install router & resource
@@ -16,8 +15,8 @@ router.map({
   '/login': {
     component: LoginView
   },
-  '/members': {
-  	component: MembersView
+  '/autoReply': {
+  	component: AutoReplyView
   },
   '/supervise': {
   	component: SuperviseView

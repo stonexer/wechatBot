@@ -51,18 +51,29 @@ router.get('/login/:uuid', (req, res) => {
 
 })
 
-router.get('/members/:uuid', (req, res) => {
+router.get('/autoReplyList/:uuid', (req, res) => {
   let bot = botInstanceArr[req.params.uuid]
-
+  
   if (bot && bot.state === WxBot.STATE.login) {
-    res.send(bot.friendList)
+    res.send(bot.autoReplyList)
   } else {
     res.sendStatus(404)
   }
 
 })
 
-router.get('/members/:uuid/:uid', (req, res) => {
+router.get('/superviseList/:uuid', (req, res) => {
+  let bot = botInstanceArr[req.params.uuid]
+  
+  if (bot && bot.state === WxBot.STATE.login) {
+    res.send(bot.superviseList)
+  } else {
+    res.sendStatus(404)
+  }
+
+})
+
+router.get('/autoReply/:uuid/:uid', (req, res) => {
   let bot = botInstanceArr[req.params.uuid]
 
   if (bot.replyUsers.has(req.params.uid)) {

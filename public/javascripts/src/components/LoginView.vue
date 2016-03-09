@@ -62,7 +62,7 @@ module.exports = {
   	},
   	login() {
   		service.loginConfirm().then(result => {
-  			this.$router.go('/members')
+  			this.$router.go('/autoReply')
   		}).catch(err => {
         this.loginFail = true
         setTimeout( () => {
@@ -89,7 +89,7 @@ module.exports = {
 
   created() {
     this.alreadyLogin().then(() => {
-      this.$router.go('/members')
+      this.$router.go('/autoReply')
     }).catch(err => {
       this.startLogin()
     })

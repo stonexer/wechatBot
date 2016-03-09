@@ -45,7 +45,7 @@ import { alert } from 'vue-strap'
 
 module.exports = {
 
-  name: 'MembersView',
+  name: 'AutoReplyView',
 
   components: {
     Member,
@@ -63,7 +63,7 @@ module.exports = {
 
   methods: {
     getMembers() {
-      return service.getMembers().then(members => {
+      return service.autoReplyList().then(members => {
         this.showMembers = this.members = members
       })
     }

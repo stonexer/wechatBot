@@ -21,14 +21,20 @@ service.loginConfirm = () => {
 	return axios.get('/api/login/'+uuid)
 }
 
-service.getMembers = () => {
-	return axios.get('/api/members/'+uuid).then(res => {
-		return res.data
+service.autoReplyList = () => {
+	return axios.get('/api/autoReplyList/'+uuid).then(res => {
+		return res.data.sort((a,b) => (a.switch > b.switch ? -1 : a.py > b.py ? 1 : -1))
+	})
+}
+
+service.superviseList = () => {
+	return axios.get('/api/superviseList/'+uuid).then(res => {
+		return res.data.sort((a,b) => (a.switch > b.switch ? -1 : a.py > b.py ? 1 : -1))
 	})
 }
 
 service.switchAutoReply = (memberId) => {
-	return axios.get('/api/members/'+uuid+'/'+memberId)
+	return axios.get('/api/autoReply/'+uuid+'/'+memberId)
 }
 
 service.switchSupervise = (memberId) => {

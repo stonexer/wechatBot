@@ -6,7 +6,7 @@
 			</div>
 			<div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
-					<li><a href="#!/members">自动回复</a></li>
+					<li><a href="#!/autoReply">自动回复</a></li>
 				</ul>
 				<ul class="nav navbar-nav">
 					<li><a href="#!/supervise">监督</a></li>
