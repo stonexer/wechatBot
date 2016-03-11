@@ -79,6 +79,7 @@ router.get('/autoReply/:uuid/:uid', (req, res) => {
   if (bot.replyUsers.has(req.params.uid)) {
     bot.replyUsers.delete(req.params.uid)
     debug('删除自动回复用户', req.params.uid)
+    bot.sendMsg("主人关闭了我，拜拜了！", req.params.uid)
   } else {
     bot.replyUsers.add(req.params.uid)
     debug('增加自动回复用户', req.params.uid)
