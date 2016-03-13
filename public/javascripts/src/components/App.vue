@@ -11,6 +11,9 @@
 				<ul class="nav navbar-nav">
 					<li><a href="#!/supervise">监督</a></li>
 				</ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="https://github.com/stonexer/wechatBot" >Project @ Github</a><li>
+        </ul>
 			</div>
 		</div>
 	</nav>
@@ -22,12 +25,6 @@
       transition
       transition-mode="out-in">
     </router-view>
-  </div>
-  
-  <div class="navbar navbar-default navbar-fixed-bottom">
-    <div class="container">
-      <a class="navbar-text navbar-right" href="https://github.com/stonexer/wechatBot" >project @ github</a>
-    </div>
   </div>
 
 </template>
