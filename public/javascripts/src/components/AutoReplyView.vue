@@ -13,7 +13,7 @@
       <div class="navbar-header">
         <a class="navbar-brand">自动回复</a>
       </div>
-      <div class="collapse navbar-collapse">
+      <div class="nav nav-justified">
         <form class="navbar-form navbar-left" role="search">
           <div class="form-group">
             <input type="text" class="form-control" placeholder="查找" v-model="critiria">

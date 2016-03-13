@@ -10,11 +10,17 @@ let botInstanceArr = {}
 router.get('/uuid', (req, res) => {
   let bot = new WxBot()
 
-  bot.getUUID().then((uuid) => {
-    res.send(uuid)
-    botInstanceArr[uuid] = bot
-    debug('New Connect', Object.getOwnPropertyNames(botInstanceArr).length)
-  })
+  bot.getUUID()
+    .then(uuid => {
+      res.send(uuid)
+      botInstanceArr[uuid] = bot
+      
+      debug('新连接', Object.getOwnPropertyNames(botInstanceArr).length)
+    })
+    .catch(err => {
+      res.sendStatus(404)
+      debug('获取UUID失败')
+    })
 })
 
 router.get('/instance/:uuid', (req, res) => {
@@ -34,19 +40,18 @@ router.get('/login/:uuid', (req, res) => {
 
   bot.start()
     .then(() => {
-      // 绑定 Logout 事件
+      res.sendStatus(200)
       bot.on('logout', () => {
           delete botInstanceArr[req.params.uuid]
-          debug('Close Logout Connect', Object.getOwnPropertyNames(botInstanceArr).length)
+          
+          debug('关闭注销连接', Object.getOwnPropertyNames(botInstanceArr).length)
         })
-        // 返回成功
-      res.sendStatus(200)
     })
-    .catch((err) => {
+    .catch(err => {
       delete botInstanceArr[req.params.uuid]
-      debug('Close Not Login Connect', Object.getOwnPropertyNames(botInstanceArr).length)
-        // 返回 Forbidden
       res.sendStatus(403)
+      
+      debug('关闭登陆失败连接', Object.getOwnPropertyNames(botInstanceArr).length)
     })
 
 })
@@ -78,10 +83,12 @@ router.get('/autoReply/:uuid/:uid', (req, res) => {
 
   if (bot.replyUsers.has(req.params.uid)) {
     bot.replyUsers.delete(req.params.uid)
-    debug('删除自动回复用户', req.params.uid)
     bot.sendMsg("主人关闭了我，拜拜了！", req.params.uid)
+    
+    debug('删除自动回复用户', req.params.uid)
   } else {
     bot.replyUsers.add(req.params.uid)
+    
     debug('增加自动回复用户', req.params.uid)
   }
   res.sendStatus(200)
@@ -93,9 +100,11 @@ router.get('/supervise/:uuid/:uid', (req, res) => {
 
   if (bot.superviseUsers.has(req.params.uid)) {
     bot.superviseUsers.delete(req.params.uid)
+    
     debug('删除监督用户', req.params.uid)
   } else {
     bot.superviseUsers.add(req.params.uid)
+    
     debug('增加监督用户', req.params.uid)
   }
   res.sendStatus(200)

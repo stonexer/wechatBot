@@ -76,14 +76,16 @@ module.exports = {
       this.showQR().then(()=>{
         this.waitTime = 100
         this.login()
+        
+        let countdown = setInterval( () => {
+            this.waitTime -= 2
+            if (this.waitTime <= 0){
+              clearInterval(countdown);
+            }
+          }, 500)
+      }).catch(err => {
+        this.startLogin()
       })
-
-      let countdown = setInterval( () => {
-          this.waitTime -= 2
-          if (this.waitTime <= 0){
-            clearInterval(countdown);
-          }
-        }, 500)
     }
   },
 
