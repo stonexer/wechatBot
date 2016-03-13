@@ -23,6 +23,12 @@
       transition-mode="out-in">
     </router-view>
   </div>
+  
+  <div class="navbar navbar-default navbar-fixed-bottom">
+    <div class="container">
+      <a class="navbar-text navbar-right" href="https://github.com/stonexer/wechatBot" >project @ github</a>
+    </div>
+  </div>
 
 </template>
 
