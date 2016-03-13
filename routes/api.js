@@ -60,7 +60,7 @@ router.get('/autoReplyList/:uuid', (req, res) => {
   let bot = botInstanceArr[req.params.uuid]
   
   if (bot && bot.state === WxBot.STATE.login) {
-    res.send(bot.autoReplyList)
+    res.send(bot.autoReplyList())
   } else {
     res.sendStatus(404)
   }
@@ -71,7 +71,7 @@ router.get('/superviseList/:uuid', (req, res) => {
   let bot = botInstanceArr[req.params.uuid]
   
   if (bot && bot.state === WxBot.STATE.login) {
-    res.send(bot.superviseList)
+    res.send(bot.superviseList())
   } else {
     res.sendStatus(404)
   }
