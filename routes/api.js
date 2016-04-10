@@ -78,6 +78,17 @@ router.get('/superviseList/:uuid', (req, res) => {
 
 })
 
+router.get('/groupMessageList/:uuid', (req, res) => {
+  let bot = botInstanceArr[req.params.uuid]
+  
+  if (bot && bot.state === WxBot.STATE.login) {
+    res.send(bot.groupMessageList())
+  } else {
+    res.sendStatus(404)
+  }
+
+})
+
 router.get('/autoReply/:uuid/:uid', (req, res) => {
   let bot = botInstanceArr[req.params.uuid]
 
@@ -107,6 +118,31 @@ router.get('/supervise/:uuid/:uid', (req, res) => {
     
     debug('增加监督用户', req.params.uid)
   }
+  res.sendStatus(200)
+
+})
+
+router.get('/groupMessage/:uuid/:uid', (req, res) => {
+  let bot = botInstanceArr[req.params.uuid]
+
+  if (bot.groupMessageUsers.has(req.params.uid)) {
+    bot.groupMessageUsers.delete(req.params.uid)
+    
+    debug('删除群发用户', req.params.uid)
+  } else {
+    bot.groupMessageUsers.add(req.params.uid)
+    
+    debug('增加群发用户', req.params.uid)
+  }
+  res.sendStatus(200)
+
+})
+
+router.post('/sendGroupMessage/:uuid', (req, res) => {
+  let bot = botInstanceArr[req.params.uuid]
+  
+  debug(req.body)
+  bot.sendGroupMessage(req.body.msg)
   res.sendStatus(200)
 
 })
