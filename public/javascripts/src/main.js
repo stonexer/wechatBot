@@ -5,6 +5,7 @@ import App from './components/App.vue'
 import LoginView from './components/LoginView.vue'
 import AutoReplyView from './components/AutoReplyView.vue'
 import SuperviseView from './components/SuperviseView.vue'
+import GroupMessageView from './components/GroupMessageView.vue'
 
 // install router & resource
 Vue.use(Router)
@@ -20,6 +21,9 @@ router.map({
   },
   '/supervise': {
   	component: SuperviseView
+  },
+  '/groupMessage': {
+  	component: GroupMessageView
   }
 })
 

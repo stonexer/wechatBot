@@ -5,6 +5,7 @@
   "main": "app.js",
   "dependencies": {
     "axios": "^0.9.1",
+    "body-parser": "^1.15.0",
     "debug": "^2.2.0",
     "es6-promise": "^3.1.2",
     "express": "^4.13.4",
@@ -58,8 +59,14 @@
     "rules": {
       "camelcase": 2,
       "curly": 2,
-      "brace-style": [2, "1tbs"],
-      "quotes": [2, "single"],
+      "brace-style": [
+        2,
+        "1tbs"
+      ],
+      "quotes": [
+        2,
+        "single"
+      ],
       "space-infix-ops": 2
     },
     "env": {
