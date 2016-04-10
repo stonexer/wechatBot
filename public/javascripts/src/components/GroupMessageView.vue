@@ -2,7 +2,7 @@
   <div>
     <nav class="navbar navbar-default">
       <div class="navbar-header">
-        <a class="navbar-brand">监督</a>
+        <a class="navbar-brand">模板群发</a>
       </div>
 
       <form class="navbar-form navbar-left" role="search">
@@ -12,20 +12,19 @@
       </form>
 
       <p class="navbar-text navbar-left">
-        该版本为内部测试版本，如需退出请点击手机微信中的退出网页版。发送群发消息{{'{{name}}'}} {{'{{count}}'}} 分别对应好友昵称和好友数量
+        该版本为内部测试版本，如需退出请点击手机微信中的退出网页版。发送群发消息 {{promptMessage}} 分别对应好友昵称和好友数量
       </p>
     </nav>
     
-    <div class="row">
-      <div class="col-lg-6">
+    <div class="row" style="margin-bottom:10px">
+      <div class="col-lg-12">
         <div class="input-group">
-          <input type="text" class="form-control" placeholder="你好，{{'{{name}}'}}" v-model="template">
+          <input type="text" class="form-control" placeholder="你好" v-model="template">
           <span class="input-group-btn">
             <button class="btn btn-success" type="button" v-on:click="send">发送!</button>
           </span>
         </div>
       </div>
-      <p></p>
     </div>
     
     <div class="row">
@@ -56,7 +55,8 @@ module.exports = {
       members: {},
       showMembers: {},
       critiria: '',
-      template: ''
+      template: '',
+      promptMessage: '{{name}} {{count}}'
     }
   },
 
@@ -67,9 +67,7 @@ module.exports = {
       })
     },
     send() {
-      return service.sendGroupMessage(this.template).then(result => {
-        alert('发送成功！')
-      })
+      return service.sendGroupMessage(this.template)
     }
   },
 
