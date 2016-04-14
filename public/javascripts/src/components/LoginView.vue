@@ -47,9 +47,6 @@ module.exports = {
   },
 
   methods: {
-    alreadyLogin() {
-      return service.checkLogin()
-    },
   	showQR() {
   		return service.getUUID().then(uuid => {
 				const qrCode = 'https://login.weixin.qq.com/l/'  + uuid
@@ -88,13 +85,15 @@ module.exports = {
       })
     }
   },
-
-  created() {
-    this.alreadyLogin().then(() => {
-      this.$router.go('/autoReply')
-    }).catch(err => {
-      this.startLogin()
-    })
+  route: {
+    data () {
+      service.checkLogin().then(() => {
+        this.$router.go('/autoReply')
+      }).catch(err => {
+        console.log('startLogin')
+        this.startLogin()
+      })
+    }
   }
 }
 </script>

@@ -15,7 +15,7 @@
     "vue-resource": "^0.7.0",
     "vue-router": "^0.7.11",
     "vue-strap": "^1.0.7",
-    "wechat4u": "^0.2.0"
+    "wechat4u": "^0.3.0"
   },
   "devDependencies": {
     "babel-core": "^6.0.0",

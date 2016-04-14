@@ -26,7 +26,7 @@ router.get('/uuid', (req, res) => {
 router.get('/instance/:uuid', (req, res) => {
   let bot = botInstanceArr[req.params.uuid]
 
-  debug(req.params.uuid, !!bot)
+  debug('wxbot 实例 state：', req.params.uuid, bot ? bot.state : undefined)
   if (bot && bot.state === WxBot.STATE.login) {
     res.sendStatus(200)
   } else {

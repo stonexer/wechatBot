@@ -91,7 +91,9 @@ module.exports = {
 
   route: {
     data () {
-      this.getMembers().catch(() => {
+      service.checkLogin().then(() => {
+        this.getMembers()
+      }).catch(err => {
         this.loginFail = true
         setTimeout( () => {
             this.$router.go('/login')

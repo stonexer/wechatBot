@@ -79,9 +79,11 @@ module.exports = {
   
   route: {
     data () {
-      this.getMembers().catch(() => {
-        alert('请先登录，谢谢！')
-        this.$router.go('/login');
+      service.checkLogin().then(() => {
+        this.getMembers()
+      }).catch(err => {
+        this.loginFail = true
+        this.$router.go('/login')
       })
     }
   },
