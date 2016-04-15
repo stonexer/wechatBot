@@ -10,7 +10,6 @@
     "es6-promise": "^3.1.2",
     "express": "^4.13.4",
     "jade": "^1.11.0",
-    "mutend": "^0.1.0",
     "vue": "^1.0.16",
     "vue-resource": "^0.7.0",
     "vue-router": "^0.7.11",
@@ -41,8 +40,8 @@
     "build-webpack": "cross-env NODE_ENV=production webpack --progress --hide-modules",
     "build": "npm run build-webpack",
     "watch": "webpack -w",
-    "debug": "npm run watch & npm run start",
-    "start": "DEBUG=wechat,wxbot,app node ./app.js"
+    "dev": "npm run watch & npm run start",
+    "start": "DEBUG=utils,wechat,wxbot,app node ./app.js"
   },
   "repository": {
     "type": "git",

@@ -12,8 +12,6 @@
 </template>
 
 <script>
-import service from '../service'
-
 module.exports = {
 
   name: 'Member',
