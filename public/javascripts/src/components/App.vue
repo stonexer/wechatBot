@@ -20,6 +20,17 @@
 			</div>
 		</div>
 	</nav>
+  
+  <div class="container">
+    <alert
+      :show.sync="loginError"
+      type="danger"
+      dismissable>
+      <span class="icon-info-circled alert-icon-float-left"></span>
+      <strong>对不起</strong>
+      <p>您的登陆已过期，请重新登陆</p>
+    </alert>
+  </div>
 
 	<div class="container">
     <router-view>
@@ -29,14 +40,30 @@
 </template>
 
 <script>
+import { alert } from 'vue-strap'
 
 module.exports = {
+  
+  components: {
+    alert
+  },
+
 	data: function () {
 		return {
 			name: '微信机器人',
-			cid: ''
+			cid: '',
+      loginError: false
 		}
-	}
+	},
+  
+  events: {
+    'login-error': function (index) {
+      this.loginError = true
+      setTimeout( () => {
+        this.loginError = false
+      }, 3000)
+    }
+  },
 }
 
 </script>

@@ -42,107 +42,46 @@ router.get('/login/:uuid', (req, res) => {
     .then(() => {
       res.sendStatus(200)
       bot.on('logout', () => {
-          delete botInstanceArr[req.params.uuid]
-          
-          debug('关闭注销连接', Object.getOwnPropertyNames(botInstanceArr).length)
-        })
+        delete botInstanceArr[req.params.uuid]    
+        debug('关闭注销连接', Object.getOwnPropertyNames(botInstanceArr).length)
+      })
     })
     .catch(err => {
       delete botInstanceArr[req.params.uuid]
       res.sendStatus(403)
-      
       debug('关闭登陆失败连接', Object.getOwnPropertyNames(botInstanceArr).length)
     })
 
 })
 
-router.get('/autoReplyList/:uuid', (req, res) => {
+router.get('/usersList/:pluginName/:uuid', (req, res) => {
   let bot = botInstanceArr[req.params.uuid]
   
   if (bot && bot.state === WxBot.STATE.login) {
-    res.send(bot.autoReplyList())
+    res.send(bot.plugins[req.params.pluginName].usersList())
   } else {
     res.sendStatus(404)
   }
-
 })
 
-router.get('/superviseList/:uuid', (req, res) => {
+router.get('/userSwitch/:pluginName/:uuid/:uid', (req, res) => {
   let bot = botInstanceArr[req.params.uuid]
   
-  if (bot && bot.state === WxBot.STATE.login) {
-    res.send(bot.superviseList())
+  debug(req.params.pluginName, '开关', req.params.uid)
+
+  if (bot.plugins[req.params.pluginName].users.has(req.params.uid)) {
+    bot.plugins[req.params.pluginName].users.delete(req.params.uid)
   } else {
-    res.sendStatus(404)
-  }
-
-})
-
-router.get('/groupMessageList/:uuid', (req, res) => {
-  let bot = botInstanceArr[req.params.uuid]
-  
-  if (bot && bot.state === WxBot.STATE.login) {
-    res.send(bot.groupMessageList())
-  } else {
-    res.sendStatus(404)
-  }
-
-})
-
-router.get('/autoReply/:uuid/:uid', (req, res) => {
-  let bot = botInstanceArr[req.params.uuid]
-
-  if (bot.replyUsers.has(req.params.uid)) {
-    bot.replyUsers.delete(req.params.uid)
-    bot.sendMsg('主人关闭了我，拜拜了！', req.params.uid)
-    
-    debug('删除自动回复用户', req.params.uid)
-  } else {
-    bot.replyUsers.add(req.params.uid)
-    
-    debug('增加自动回复用户', req.params.uid)
+    bot.plugins[req.params.pluginName].users.add(req.params.uid)
   }
   res.sendStatus(200)
-
-})
-
-router.get('/supervise/:uuid/:uid', (req, res) => {
-  let bot = botInstanceArr[req.params.uuid]
-
-  if (bot.superviseUsers.has(req.params.uid)) {
-    bot.superviseUsers.delete(req.params.uid)
-    
-    debug('删除监督用户', req.params.uid)
-  } else {
-    bot.superviseUsers.add(req.params.uid)
-    
-    debug('增加监督用户', req.params.uid)
-  }
-  res.sendStatus(200)
-
-})
-
-router.get('/groupMessage/:uuid/:uid', (req, res) => {
-  let bot = botInstanceArr[req.params.uuid]
-
-  if (bot.groupMessageUsers.has(req.params.uid)) {
-    bot.groupMessageUsers.delete(req.params.uid)
-    
-    debug('删除群发用户', req.params.uid)
-  } else {
-    bot.groupMessageUsers.add(req.params.uid)
-    
-    debug('增加群发用户', req.params.uid)
-  }
-  res.sendStatus(200)
-
 })
 
 router.post('/sendGroupMessage/:uuid', (req, res) => {
   let bot = botInstanceArr[req.params.uuid]
   
   debug(req.body)
-  bot.sendGroupMessage(req.body.msg)
+  bot.plugins['groupMessage'].send(req.body.msg)
   res.sendStatus(200)
 
 })

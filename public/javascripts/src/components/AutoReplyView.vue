@@ -1,14 +1,6 @@
 <template>
   <div>
-    <alert
-      :show.sync="loginFail"
-      type="danger"
-      dismissable>
-      <span class="icon-info-circled alert-icon-float-left"></span>
-      <strong>对不起</strong>
-      <p>您的登陆已过期，请重新登陆</p>
-    </alert>
-
+  
     <nav class="navbar navbar-default">
       <div class="navbar-header">
         <a class="navbar-brand">自动回复</a>
@@ -39,22 +31,20 @@
 </template>
 
 <script>
-import service from '../service'
+import api from '../service/api'
 import Member from './Member.vue'
-import { alert } from 'vue-strap'
 
 module.exports = {
 
   name: 'AutoReplyView',
 
   components: {
-    Member,
-    alert
+    Member
   },
 
   data() {
     return {
-      loginFail: false,
+      pluginName: 'autoReply',
       members: {},
       showMembers: {},
       critiria: ''
@@ -63,7 +53,7 @@ module.exports = {
 
   methods: {
     getMembers() {
-      return service.autoReplyList().then(members => {
+      return api.usersList(this.pluginName).then(members => {
         this.showMembers = this.members = members
       })
     }
@@ -71,7 +61,7 @@ module.exports = {
 
   watch: {
     critiria () {
-      this.showMembers = this.members.filter((member) => {
+      this.showMembers = this.members.filter(member => {
         return member.nickname.indexOf(this.critiria) > -1
       })
     }
@@ -81,7 +71,7 @@ module.exports = {
     'switch-member': function (index) {
       let member = this.showMembers.splice(index,1)[0]
 
-      service.switchAutoReply(member.username).then(() => {
+      api.userSwitch(this.pluginName, member.username).then(() => {
         member.switch = !member.switch
       })
 
@@ -91,10 +81,10 @@ module.exports = {
 
   route: {
     data () {
-      service.checkLogin().then(() => {
+      api.checkLogin().then(() => {
         this.getMembers()
       }).catch(err => {
-        this.loginFail = true
+        this.$dispatch('login-error', err)
         setTimeout( () => {
             this.$router.go('/login')
           }, 2000)

@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import service from '../service'
+import api from '../service/api'
 import Member from './Member.vue'
 
 module.exports = {
@@ -52,6 +52,7 @@ module.exports = {
 
   data() {
     return {
+      pluginName: 'groupMessage',
       members: {},
       showMembers: {},
       critiria: '',
@@ -62,12 +63,12 @@ module.exports = {
 
   methods: {
     getMembers() {
-      return service.groupMessageList().then(members => {
+      return api.usersList(this.pluginName).then(members => {
         this.showMembers = this.members = members
       })
     },
     send() {
-      return service.sendGroupMessage(this.template)
+      return api.sendGroupMessage(this.template)
     }
   },
 
@@ -83,7 +84,7 @@ module.exports = {
     'switch-member': function (index) {
       let member = this.showMembers.splice(index,1)[0]
 
-      service.switchGroupMessage(member.username).then(() => {
+      api.userSwitch(this.pluginName, member.username).then(() => {
         member.switch = !member.switch
       })
 
@@ -93,10 +94,10 @@ module.exports = {
   
   route: {
     data () {
-      service.checkLogin().then(() => {
+      api.checkLogin().then(() => {
         this.getMembers()
       }).catch(err => {
-        this.loginFail = true
+        this.$dispatch('login-error', err)
         this.$router.go('/login')
       })
     }

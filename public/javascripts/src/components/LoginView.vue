@@ -5,15 +5,6 @@
     <progressbar :now="waitTime" :type=" waitTime > 50 ? 'success' : waitTime > 20 ? 'warning' : 'danger' " striped animated></progressbar>
   </div>
 
-  <alert
-    :show.sync="loginFail"
-    type="danger"
-    dismissable>
-    <span class="icon-info-circled alert-icon-float-left"></span>
-    <strong>对不起</strong>
-    <p>您超时未登录，请重新登陆</p>
-  </alert>
-
 </template>
 
 <style>
@@ -27,7 +18,7 @@
 </style>
 
 <script>
-import service from '../service'
+import api from '../service/api'
 import { progressbar,alert } from 'vue-strap'
 
 module.exports = {
@@ -36,8 +27,7 @@ module.exports = {
 
   data() {
     return {
-      waitTime: 100,
-      loginFail: false
+      waitTime: 100
     }
   },
 
@@ -48,7 +38,7 @@ module.exports = {
 
   methods: {
   	showQR() {
-  		return service.getUUID().then(uuid => {
+  		return api.getUUID().then(uuid => {
 				const qrCode = 'https://login.weixin.qq.com/l/'  + uuid
         this.$els.qrCode.innerHTML = ''
 				new QRCode(this.$els.qrCode, qrCode)
@@ -58,18 +48,16 @@ module.exports = {
       })
   	},
   	login() {
-  		service.loginConfirm().then(result => {
+  		api.loginConfirm().then(result => {
   			this.$router.go('/autoReply')
   		}).catch(err => {
-        this.loginFail = true
+        this.$dispatch('login-error', err)
         setTimeout( () => {
             this.startLogin()
           }, 2000)
   		})
   	},
     startLogin() {
-      this.loginFail = false
-
       this.showQR().then(()=>{
         this.waitTime = 100
         this.login()
@@ -87,7 +75,7 @@ module.exports = {
   },
   route: {
     data () {
-      service.checkLogin().then(() => {
+      api.checkLogin().then(() => {
         this.$router.go('/autoReply')
       }).catch(err => {
         console.log('startLogin')
