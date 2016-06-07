@@ -86,4 +86,51 @@ router.post('/sendGroupMessage/:uuid', (req, res) => {
 
 })
 
+router.get('/friendList/:uuid', (req, res) => {
+  let bot = botInstanceArr[req.params.uuid]
+  
+  if (bot && bot.state === WxBot.STATE.login) {
+    res.send(bot.friendList)
+  } else {
+    res.sendStatus(404)
+  }
+})
+
+router.get('/chatSession/:uuid', (req, res) => {
+  let bot = botInstanceArr[req.params.uuid]
+  
+  if (bot && bot.state === WxBot.STATE.login) {
+    let now = new Date()
+    let user = {
+      username: bot.user['UserName'],
+      nickname: bot.user['NickName'],
+      img: 'static/images/logo.png'
+    }
+    let userList = bot.friendList.sort((a,b) => ( a.py > b.py ? 1 : -1)).map(friend => {
+      friend.img = 'static/images/logo.png'
+      return friend
+    })
+    let sessionList = [
+      {
+          username: bot.user['UserName'],
+          messages: [
+              {
+                  text: 'Hello，这是一个基于Vue + Webpack构建的简单chat示例。',
+                  date: now
+              }, 
+              {
+                  text: '项目地址: https://github.com/coffcer/vue-chat',
+                  date: now
+              }
+          ]
+      },
+    ]
+    res.send({
+      user, userList, sessionList
+    })
+  } else {
+    res.sendStatus(404)
+  }
+})
+
 module.exports = router

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="group-message-content">
     <nav class="navbar navbar-default">
       <div class="navbar-header">
         <a class="navbar-brand">模板群发</a>
@@ -104,3 +104,12 @@ module.exports = {
   },
 }
 </script>
+
+<style lang="less">
+.group-message-content {
+  background-color: #FFF;
+  padding: 10px;
+  border-top: 5px solid #94b18e;
+  border-radius: 3px;
+}
+</style>

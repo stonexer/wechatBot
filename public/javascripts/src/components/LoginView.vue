@@ -1,13 +1,28 @@
 <template>
-  <div class="text-center" id="qrcode" v-el:qr-code></div>
+ <div class="login-content">
+  <div class="scanQR">
+    <div class="text-center" id="qrcode" v-el:qr-code></div>
 
-  <div class="progress center-block">
-    <progressbar :now="waitTime" :type=" waitTime > 50 ? 'success' : waitTime > 20 ? 'warning' : 'danger' " striped animated></progressbar>
+    <div class="progress center-block">
+      <progressbar :now="waitTime" :type=" waitTime > 50 ? 'success' : waitTime > 20 ? 'warning' : 'danger' " striped animated></progressbar>
+    </div>
   </div>
-
+ </div>
 </template>
 
-<style>
+<style lang="less">
+.login-content {
+  position: relative;
+  margin: 0;
+  width: 100%;
+  height: 400px;
+}
+.scanQR {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -150px 0px 0px -158px;
+  
   #qrcode {
     height: 256px;
   }
@@ -15,6 +30,7 @@
     margin-top: 20px;
     width: 300px;
   }
+}
 </style>
 
 <script>

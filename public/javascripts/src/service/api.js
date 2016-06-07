@@ -34,3 +34,18 @@ api.userSwitch = (pluginName, username) => {
 api.sendGroupMessage = msg => {
   return axios.post('/api/sendGroupMessage/' + uuid, {msg:msg})
 }
+
+api.friendList = () => {
+	return axios.get(`/api/friendList/${uuid}`).then(res => {
+		return res.data.sort((a,b) => ( a.py > b.py ? 1 : -1)).map(friend => {
+      friend.img = 'static/images/logo.png'
+      return friend
+    })
+	})
+}
+
+api.chatSession = () => {
+  return axios.get(`/api/chatSession/${uuid}`).then(res => {
+    return res.data
+  })
+}

@@ -6,6 +6,7 @@ import LoginView from './components/LoginView.vue'
 import AutoReplyView from './components/AutoReplyView.vue'
 import SuperviseView from './components/SuperviseView.vue'
 import GroupMessageView from './components/GroupMessageView.vue'
+import ChatView from './components/ChatView.vue'
 
 // install router & resource
 Vue.use(Router)
@@ -24,6 +25,9 @@ router.map({
   },
   '/groupMessage': {
   	component: GroupMessageView
+  },
+  '/chat': {
+  	component: ChatView
   }
 })
 
@@ -36,3 +40,6 @@ router.redirect({
 })
 
 router.start(App, 'app')
+
+// socket.io
+var socket = io()

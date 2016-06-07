@@ -14,6 +14,9 @@
         <ul class="nav navbar-nav">
 					<li><a href="#!/groupMessage">模板群发</a></li>
 				</ul>
+        <ul class="nav navbar-nav">
+					<li><a href="#!/chat">聊天</a></li>
+				</ul>
         <ul class="nav navbar-nav navbar-right">
           <li><a href="https://github.com/stonexer/wechatBot" >Project @ Github</a><li>
         </ul>

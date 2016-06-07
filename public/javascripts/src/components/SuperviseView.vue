@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="supervise-content">
     <nav class="navbar navbar-default">
       <div class="navbar-header">
         <a class="navbar-brand">监督</a>
@@ -90,3 +90,12 @@ module.exports = {
   },
 }
 </script>
+
+<style lang="less">
+.supervise-content {
+  background-color: #FFF;
+  padding: 10px;
+  border-top: 5px solid #3f8636;
+  border-radius: 3px;
+}
+</style>

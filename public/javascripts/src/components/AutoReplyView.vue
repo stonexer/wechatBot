@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="auto-reply-content">
   
     <nav class="navbar navbar-default">
       <div class="navbar-header">
@@ -93,3 +93,12 @@ module.exports = {
   },
 }
 </script>
+
+<style lang="less">
+.auto-reply-content {
+  background-color: #FFF;
+  padding: 10px;
+  border-top: 5px solid #177020;
+  border-radius: 3px;
+}
+</style>
