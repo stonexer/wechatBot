@@ -6,10 +6,9 @@
 
 ##测试开发
 
-仅尝试功能的话，可在demo服务器中测试，支持多用户实例。
+仅尝试功能的话，可在demo服务器（简单功能）中测试，支持多用户实例。
 
- * [vue版本](http://www.sitixi.com:3000) 
- * [原始版本(with jQuery) 不在开发](http://www.sitixi.com:3001) 
+ * [vue版本](http://wechat4u.duapp.com/#!/login) 
 
 如果需要调试开发，首先安装好 node.js 开发环境，运行
 
